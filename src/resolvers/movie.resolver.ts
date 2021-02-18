@@ -1,7 +1,7 @@
 import { Query, Resolver } from "type-graphql";
 import { Movie } from "@generated/type-graphql/models";
 import { prismaClient } from "../prisma";
-import { GetMoviesOutput } from "../dtos/common";
+import { GetMoviesOutput } from "../dtos/common.dto";
 
 @Resolver((of) => Movie)
 export class MovieResolver {

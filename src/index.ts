@@ -1,8 +1,8 @@
 import { prisma, PrismaClient } from "@prisma/client";
 import { ApolloServer, gql } from "apollo-server";
-import { createServer } from "http";
-import { moveEmitHelpers } from "typescript";
-import app from "./express";
+import * as dotenv from "dotenv";
+
+dotenv.config({ path: __dirname + "/../.env" });
 
 const PORT: number = Number(process.env.PORT) || 3000;
 
@@ -140,6 +140,7 @@ const resolvers = {
 
 const main = async () => {
   //const server = createServer(app);
+
   const server = new ApolloServer({
     typeDefs,
     resolvers,

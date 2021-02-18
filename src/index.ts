@@ -27,6 +27,8 @@ const main = async () => {
   );
   // resolvers, and types, made from app
   const appSchema = makeExecutableSchema({ typeDefs, resolvers: appResolvers });
+
+  // resolvers from prisma
   schema = await buildSchema({
     resolvers,
     validate: false,

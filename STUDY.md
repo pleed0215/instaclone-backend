@@ -26,3 +26,9 @@ typegraphql과 prisma2 integration
 - [TypeGraphQL-Prisma](https://www.npmjs.com/package/typegraphql-prisma)
 - [GraphQL-ISO-Date](https://www.npmjs.com/package/graphql-iso-date)
 - [graphql-typescript.config](https://github.com/MichalLytek/type-graphql/blob/master/tsconfig.json)
+
+## Type-Graphql
+
+- 위 링크참고하여 tsconfig.json 설정.
+- typegraphql 홈페이지 링크 참고하여 schema.prisma 수정.
+- graphql-tools 설치하여 type-graphql 용 schema와 prisma에서 제공해주는 schema를 병합.

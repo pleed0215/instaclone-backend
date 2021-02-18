@@ -17,3 +17,12 @@
 <code>npm install prisma --save-dev</code>
 
 .. 강의 대부분 익숙한 내용이라 따로 적을 필요 없음..
+
+npx prisma studio
+
+typegraphql과 prisma2 integration
+
+- [TypeGraphQL](https://typegraphql.com/docs/prisma.html)
+- [TypeGraphQL-Prisma](https://www.npmjs.com/package/typegraphql-prisma)
+- [GraphQL-ISO-Date](https://www.npmjs.com/package/graphql-iso-date)
+- [graphql-typescript.config](https://github.com/MichalLytek/type-graphql/blob/master/tsconfig.json)

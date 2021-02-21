@@ -15,9 +15,9 @@ export class UserResolver {
   async seeProfile(
     @Arg("input") input: SeeProfileInput
   ): Promise<SeeprofileOutput> {
-    const { id } = input;
+    const { username } = input;
     try {
-      const user = await prismaClient.user.findUnique({ where: { id } });
+      const user = await prismaClient.user.findUnique({ where: { username } });
 
       if (user) {
         return {

@@ -29,11 +29,20 @@ export class CreateAccountOutput extends CommonOutput {}
 @InputType()
 export class SeeProfileInput {
   @Field((type) => Int)
-  id: number;
+  username: string;
 }
 
 @ObjectType()
 export class SeeprofileOutput extends CommonOutput {
   @Field((type) => User, { nullable: true })
   user?: User;
+}
+
+@InputType()
+export class LoginInput {
+  @Field((type) => String)
+  username: string;
+
+  @Field((type) => String)
+  password: string;
 }

@@ -4,89 +4,46 @@ import { prismaClient } from "../../prisma";
 import {
   CreateAccountInput,
   CreateAccountOutput,
+  LoginInput,
+  LoginOutput,
   SeeProfileInput,
   SeeprofileOutput,
+  UpdateProfileInput,
+  UpdateProfileOutput,
 } from "../../dtos/user/user.dto";
 import * as bcrypt from "bcrypt";
+import * as jwt from "jsonwebtoken";
+import { UserService } from "./user.service";
+import { AuthUser } from "../../auth/auth.decorator";
 
 @Resolver((of) => User)
 export class UserResolver {
+  constructor(private readonly userService: UserService) {
+    this.userService = new UserService();
+  }
   @Query((returns) => SeeprofileOutput)
-  async seeProfile(
-    @Arg("input") input: SeeProfileInput
-  ): Promise<SeeprofileOutput> {
-    const { username } = input;
-    try {
-      const user = await prismaClient.user.findUnique({ where: { username } });
-
-      if (user) {
-        return {
-          ok: true,
-          user,
-        };
-      } else {
-        throw new Error("Cannot create user.");
-      }
-    } catch (e) {
-      return {
-        ok: false,
-        error: e.message,
-      };
-    }
+  seeProfile(@Arg("input") input: SeeProfileInput): Promise<SeeprofileOutput> {
+    return this.userService.seeProfile(input);
   }
 
   @Mutation((returns) => CreateAccountOutput)
-  async createAccount(
+  createAccount(
     @Arg("input") input: CreateAccountInput
   ): Promise<CreateAccountOutput> {
-    const {
-      username,
-      email,
-      password: beforeHash,
-      firstName,
-      lastName,
-    } = input;
-    try {
-      const existingUser = await prismaClient.user.findFirst({
-        where: {
-          OR: [
-            {
-              username,
-            },
-            {
-              email,
-            },
-          ],
-        },
-      });
-      if (existingUser) {
-        throw new Error(
-          "That email address or username is already exist. Try another"
-        );
-      }
-      const afterHash = await bcrypt.hash(beforeHash, 10);
-      const user = await prismaClient.user.create({
-        data: {
-          username,
-          email,
-          password: afterHash,
-          firstName,
-          lastName,
-        },
-      });
+    return this.userService.createAccount(input);
+  }
 
-      if (user) {
-        return {
-          ok: true,
-        };
-      } else {
-        throw new Error("Cannot create user");
-      }
-    } catch (e) {
-      return {
-        ok: false,
-        error: e.message,
-      };
-    }
+  @Mutation((returns) => LoginOutput)
+  login(@Arg("input") input: LoginInput): Promise<LoginOutput> {
+    return this.userService.login(input);
+  }
+
+  @Mutation((returns) => UpdateProfileOutput)
+  updateProfile(
+    @AuthUser() currentUser,
+    @Arg("input") input: UpdateProfileInput
+  ): Promise<UpdateProfileOutput> {
+    console.log(currentUser);
+    return this.userService.updateProfile(input);
   }
 }

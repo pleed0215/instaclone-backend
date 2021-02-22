@@ -21,6 +21,12 @@ export class UserInput {
   @Field((type) => String)
   email: string;
 
+  @Field((type) => String, { nullable: true })
+  bio?: string;
+
+  @Field((type) => String, { nullable: true })
+  avatar?: string;
+
   @Field((type) => Date)
   createdAt: Date;
 
@@ -78,8 +84,6 @@ export class LoginOutput extends CommonOutput {
   token?: string;
 }
 
-type UpdateInput = Partial<UserInput>;
-
 @InputType()
 export class UpdateProfileInput {
   @Field((type) => Int)
@@ -99,6 +103,12 @@ export class UpdateProfileInput {
 
   @Field((type) => String, { nullable: true })
   password?: string;
+
+  @Field((type) => String, { nullable: true })
+  bio?: string;
+
+  @Field((type) => String, { nullable: true })
+  avatar?: string;
 }
 
 @ObjectType()

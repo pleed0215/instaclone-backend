@@ -12,7 +12,7 @@ import { stitchSchemas } from "graphql-tools";
 import * as jwt from "jsonwebtoken";
 import { SECRET_KEY } from "./utils";
 import { User } from "@generated/type-graphql";
-import { UserInput } from "./dtos/user/user.dto";
+import { customAuthChecker } from "./auth/auth.checker";
 
 dotenv.config({ path: __dirname + "/../.env" });
 
@@ -24,6 +24,7 @@ const main = async () => {
   const { typeDefs, resolvers: appResolvers } = await buildTypeDefsAndResolvers(
     {
       resolvers: [__dirname + "/**/*.resolver.{ts,js}"],
+      authChecker: customAuthChecker,
     }
   );
   // resolvers, and types, made from app
@@ -33,6 +34,7 @@ const main = async () => {
   schema = await buildSchema({
     resolvers,
     validate: false,
+    authChecker: customAuthChecker,
   });
   const totalSchema = stitchSchemas({ subschemas: [appSchema, schema] });
 

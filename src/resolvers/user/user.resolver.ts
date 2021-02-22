@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { User } from "@generated/type-graphql";
 import { prismaClient } from "../../prisma";
 import {
@@ -11,8 +11,7 @@ import {
   UpdateProfileInput,
   UpdateProfileOutput,
 } from "../../dtos/user/user.dto";
-import * as bcrypt from "bcrypt";
-import * as jwt from "jsonwebtoken";
+
 import { UserService } from "./user.service";
 import { AuthUser } from "../../auth/auth.decorator";
 
@@ -39,11 +38,11 @@ export class UserResolver {
   }
 
   @Mutation((returns) => UpdateProfileOutput)
+  @Authorized()
   updateProfile(
     @AuthUser() currentUser,
     @Arg("input") input: UpdateProfileInput
   ): Promise<UpdateProfileOutput> {
-    console.log(currentUser);
     return this.userService.updateProfile(input);
   }
 }

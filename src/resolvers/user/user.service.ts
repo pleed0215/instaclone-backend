@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query } from "type-graphql";
+import fs, { write } from "fs";
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -13,7 +13,6 @@ import { prismaClient } from "../../prisma";
 import { SECRET_KEY } from "../../utils";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
-import { prisma } from "@prisma/client";
 
 export class UserService {
   async seeProfile(input: SeeProfileInput): Promise<SeeprofileOutput> {
@@ -121,7 +120,31 @@ export class UserService {
     try {
       const user = await prismaClient.user.findUnique({ where: { id } });
       if (user) {
-        const { password, ...elsePassword } = updateInput;
+        const {
+          password,
+          avatar: avatarInput,
+          ...elseAvatarAndPassword
+        } = updateInput;
+        let avatar;
+
+        if (avatarInput) {
+          // @ts-ignore
+          const { filename, createReadStream } = await avatarInput;
+          const readStream: fs.ReadStream = createReadStream();
+          console.log(process.cwd() + "/uploads/" + filename);
+          const writeStream: fs.WriteStream = fs.createWriteStream(
+            process.cwd() +
+              "/uploads/" +
+              user.id +
+              "_" +
+              Date.now() +
+              "_" +
+              filename
+          );
+
+          console.log(readStream.pipe(writeStream));
+        }
+
         let newPassword;
         if (password) {
           newPassword = await bcrypt.hash(password, 10);
@@ -130,7 +153,7 @@ export class UserService {
           where: { id },
           data: {
             ...(newPassword && { password: newPassword }),
-            ...elsePassword,
+            ...elseAvatarAndPassword,
           },
         });
 

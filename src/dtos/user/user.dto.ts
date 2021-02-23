@@ -2,6 +2,8 @@ import { IsEmail, IsString } from "class-validator";
 import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { CommonOutput } from "../common.dto";
 import { User } from "@generated/type-graphql";
+import { GraphQLUpload } from "graphql-tools";
+import { File } from "./file.upload";
 
 @InputType("UserInput", { isAbstract: true })
 @ObjectType()
@@ -24,8 +26,8 @@ export class UserInput {
   @Field((type) => String, { nullable: true })
   bio?: string;
 
-  @Field((type) => String, { nullable: true })
-  avatar?: string;
+  @Field((type) => GraphQLUpload, { nullable: true })
+  avatar?: File;
 
   @Field((type) => Date)
   createdAt: Date;
@@ -107,8 +109,8 @@ export class UpdateProfileInput {
   @Field((type) => String, { nullable: true })
   bio?: string;
 
-  @Field((type) => String, { nullable: true })
-  avatar?: string;
+  @Field((type) => GraphQLUpload, { nullable: true })
+  avatar?: File;
 }
 
 @ObjectType()

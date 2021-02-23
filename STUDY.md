@@ -32,3 +32,15 @@ typegraphql과 prisma2 integration
 - 위 링크참고하여 tsconfig.json 설정.
 - typegraphql 홈페이지 링크 참고하여 schema.prisma 수정.
 - graphql-tools 설치하여 type-graphql 용 schema와 prisma에서 제공해주는 schema를 병합.
+
+## GraphQL upload 관련 이슈
+
+이거 node 버그 때문임.
+그래서 file에서 받아온 createReadStream이 작동을 안함.
+
+"resolutions": {
+"fs-capacitor":"^6.2.0",
+"graphql-upload":"^11.0.0"
+}
+추가
+그리고 npx npm-force-resolutions 실행

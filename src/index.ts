@@ -1,4 +1,4 @@
-import { ApolloServer, gql, makeExecutableSchema } from "apollo-server";
+import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
 import * as dotenv from "dotenv";
 
 import "reflect-metadata";
@@ -13,12 +13,17 @@ import * as jwt from "jsonwebtoken";
 import { SECRET_KEY } from "./utils";
 import { User } from "@generated/type-graphql";
 import { customAuthChecker } from "./auth/auth.checker";
+import express from "express";
+import logger from "morgan";
+import * as bodyParser from "body-parser";
 
 dotenv.config({ path: __dirname + "/../.env" });
 
 const PORT: number = Number(process.env.PORT) || 3000;
 
 let schema: GraphQLSchema;
+
+const app = express();
 
 const main = async () => {
   const { typeDefs, resolvers: appResolvers } = await buildTypeDefsAndResolvers(
@@ -41,35 +46,45 @@ const main = async () => {
   const server = new ApolloServer({
     schema: totalSchema,
     playground: true,
+    // authentication part.
     context: async ({ req }): Promise<Context> => {
       const token = req.headers["x-jwt"];
       let user: User | null = null;
 
       if (token) {
-        const decoded = jwt.verify(token.toString(), SECRET_KEY);
-        if (typeof decoded === "object" && decoded.hasOwnProperty("id")) {
-          //@ts-ignore
-          user = await prismaClient.user.findUnique({
-            // @ts-ignore
-            where: { id: decoded["id"] },
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              username: true,
-              email: true,
-            },
-          });
+        try {
+          const decoded = jwt.verify(token.toString(), SECRET_KEY);
+          if (typeof decoded === "object" && decoded.hasOwnProperty("id")) {
+            //@ts-ignore
+            user = await prismaClient.user.findUnique({
+              // @ts-ignore
+              where: { id: decoded["id"] },
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                username: true,
+                email: true,
+              },
+            });
+          }
+        } catch {
+          user = null;
         }
       }
-
       const context = {
         user,
       };
+
       return context;
     },
   });
-  server.listen(PORT, () => {
+
+  app.use(logger("tiny"));
+  app.use("/static", express.static("uploads"));
+  server.applyMiddleware({ app });
+
+  app.listen({ port: PORT }, () => {
     console.log(`🤗 Express server start with PORT ${PORT}`);
   });
 };

@@ -1,6 +1,10 @@
 import { IsEmail, IsString } from "class-validator";
 import { Field, InputType, Int, ObjectType } from "type-graphql";
-import { CommonOutput } from "../common.dto";
+import {
+  CommonOutput,
+  CommonPaginatedInput,
+  CommonPaginatedOutput,
+} from "../common.dto";
 import { User } from "@generated/type-graphql";
 import { GraphQLUpload } from "graphql-tools";
 import { FileUpload } from "../file.upload";
@@ -115,3 +119,36 @@ export class UpdateProfileInput {
 
 @ObjectType()
 export class UpdateProfileOutput extends CommonOutput {}
+
+@InputType()
+export class ToggleFollowUserInput {
+  @Field((type) => String)
+  username: string;
+}
+
+@ObjectType()
+export class ToggleFollowUserOutput extends CommonOutput {
+  @Field((type) => Boolean, { nullable: true })
+  isFollow?: boolean;
+
+  @Field((type) => String, { nullable: true })
+  message?: string;
+}
+
+@InputType()
+export class SeeFollowersInput extends CommonPaginatedInput {
+  @Field((type) => String)
+  username: string;
+}
+
+@ObjectType()
+export class SeeFollowersOutput extends CommonPaginatedOutput {
+  @Field((type) => [User], { nullable: true })
+  followers?: User[];
+}
+
+@InputType()
+export class SeeFollowingInput extends SeeFollowersOutput {}
+
+@ObjectType()
+export class SeeFollowingOutput extends SeeFollowersOutput {}

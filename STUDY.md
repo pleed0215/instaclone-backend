@@ -53,3 +53,5 @@ https://github.com/rogeriochaves/npm-force-resolutions/issues/22
 
 ReadStream을 s3 upload 하려면... 방법은 잘 못 찾았는데 패키지는 찾음.
 https://www.npmjs.com/package/s3-upload-stream
+
+prisma는 follower/following relation 만들기가 쉽다.

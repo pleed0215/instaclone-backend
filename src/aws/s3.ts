@@ -22,31 +22,33 @@ export const uploadFile = async (file: FileUpload): Promise<UploadResult> => {
       const s3Stream = require("s3-upload-stream")(new AWS.S3());
 
       const { filename, createReadStream } = file;
+
       const readStream: fs.ReadStream = createReadStream();
 
       const objectName = `${Date.now()}_${filename}`;
-      const upload = await s3Stream.upload({
+      const upload = s3Stream.upload({
         Bucket: BUCKET_NAME,
         Key: objectName,
         ACL: "public-read",
       });
+      let url;
       upload.on("error", () => {
         throw new Error("Error occured while uploading");
       });
+
       upload.on("part", (details) => {
-        console.log(details);
+        console.log("hello");
       });
+
       upload.on("uploaded", (details) => {
-        console.log(details);
+        url = details.Location;
       });
 
       readStream.pipe(upload);
 
-      const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${objectName}`;
-
       return {
         ok: true,
-        url,
+        ...(url && { url }),
       };
     } else {
       throw new Error("AWS Credential failed");

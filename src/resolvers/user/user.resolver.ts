@@ -8,6 +8,8 @@ import {
   LoginOutput,
   SeeProfileInput,
   SeeprofileOutput,
+  ToggleFollowUserInput,
+  ToggleFollowUserOutput,
   UpdateProfileInput,
   UpdateProfileOutput,
 } from "../../dtos/user/user.dto";
@@ -44,5 +46,14 @@ export class UserResolver {
     @Arg("input") input: UpdateProfileInput
   ): Promise<UpdateProfileOutput> {
     return this.userService.updateProfile(input);
+  }
+
+  @Mutation((returns) => ToggleFollowUserOutput)
+  @Authorized()
+  toggleFollow(
+    @AuthUser() authUser,
+    @Arg("input") input: ToggleFollowUserInput
+  ) {
+    return this.userService.toggleFollowUser(authUser, input);
   }
 }

@@ -3,7 +3,7 @@ import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { CommonOutput } from "../common.dto";
 import { User } from "@generated/type-graphql";
 import { GraphQLUpload } from "graphql-tools";
-import { File } from "./file.upload";
+import { FileUpload } from "../file.upload";
 
 @InputType("UserInput", { isAbstract: true })
 @ObjectType()
@@ -27,7 +27,7 @@ export class UserInput {
   bio?: string;
 
   @Field((type) => GraphQLUpload, { nullable: true })
-  avatar?: File;
+  avatar?: FileUpload;
 
   @Field((type) => Date)
   createdAt: Date;
@@ -110,7 +110,7 @@ export class UpdateProfileInput {
   bio?: string;
 
   @Field((type) => GraphQLUpload, { nullable: true })
-  avatar?: File;
+  avatar?: FileUpload;
 }
 
 @ObjectType()

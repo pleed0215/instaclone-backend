@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
 
-export interface File {
+export interface FileUpload {
   filename: string;
 
   mimetype: string;

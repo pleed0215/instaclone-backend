@@ -13,6 +13,7 @@ import { prismaClient } from "../../prisma";
 import { SECRET_KEY } from "../../utils";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
+import { uploadFile } from "../../aws/s3";
 
 export class UserService {
   async seeProfile(input: SeeProfileInput): Promise<SeeprofileOutput> {
@@ -128,21 +129,7 @@ export class UserService {
         let avatar;
 
         if (avatarInput) {
-          // @ts-ignore
-          const { filename, createReadStream } = await avatarInput;
-          const readStream: fs.ReadStream = createReadStream();
-          console.log(process.cwd() + "/uploads/" + filename);
-          const writeStream: fs.WriteStream = fs.createWriteStream(
-            process.cwd() +
-              "/uploads/" +
-              user.id +
-              "_" +
-              Date.now() +
-              "_" +
-              filename
-          );
-
-          console.log(readStream.pipe(writeStream));
+          avatar = await uploadFile(await avatarInput);
         }
 
         let newPassword;
@@ -153,6 +140,7 @@ export class UserService {
           where: { id },
           data: {
             ...(newPassword && { password: newPassword }),
+            ...(avatar && { avatar }),
             ...elseAvatarAndPassword,
           },
         });

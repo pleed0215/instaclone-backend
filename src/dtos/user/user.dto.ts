@@ -148,7 +148,10 @@ export class SeeFollowersOutput extends CommonPaginatedOutput {
 }
 
 @InputType()
-export class SeeFollowingInput extends SeeFollowersOutput {}
+export class SeeFollowingsInput extends SeeFollowersInput {}
 
 @ObjectType()
-export class SeeFollowingOutput extends SeeFollowersOutput {}
+export class SeeFollowingsOutput extends CommonPaginatedOutput {
+  @Field((type) => [User], { nullable: true })
+  followings?: User[];
+}

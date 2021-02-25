@@ -6,6 +6,10 @@ import {
   CreateAccountOutput,
   LoginInput,
   LoginOutput,
+  SeeFollowersInput,
+  SeeFollowersOutput,
+  SeeFollowingsInput,
+  SeeFollowingsOutput,
   SeeProfileInput,
   SeeprofileOutput,
   ToggleFollowUserInput,
@@ -55,5 +59,21 @@ export class UserResolver {
     @Arg("input") input: ToggleFollowUserInput
   ) {
     return this.userService.toggleFollowUser(authUser, input);
+  }
+
+  @Query((returns) => SeeFollowersOutput)
+  @Authorized()
+  seeFollowers(
+    @Arg("input") input: SeeFollowersInput
+  ): Promise<SeeFollowersOutput> {
+    return this.userService.seeFollowers(input);
+  }
+
+  @Query((returns) => SeeFollowingsOutput)
+  @Authorized()
+  seeFollowings(
+    @Arg("input") input: SeeFollowingsInput
+  ): Promise<SeeFollowingsOutput> {
+    return this.userService.seeFollowings(input);
   }
 }

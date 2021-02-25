@@ -10,8 +10,10 @@ interface UploadResult {
 
 const BUCKET_NAME = "ninstaclone";
 
+// FileUpload from dto/file.upload.ts
 export const uploadFile = async (file: FileUpload): Promise<UploadResult> => {
   try {
+    // credential config.
     if (process.env.AWS_ACCESS_KEY && process.env.AWS_SECRET_KEY) {
       AWS.config.update({
         credentials: {
@@ -19,6 +21,8 @@ export const uploadFile = async (file: FileUpload): Promise<UploadResult> => {
           secretAccessKey: process.env.AWS_SECRET_KEY,
         },
       });
+
+      // s3-upload-stream package, WriteStream for S3
       const s3Stream = require("s3-upload-stream")(new AWS.S3());
 
       const { filename, createReadStream } = file;
@@ -31,21 +35,21 @@ export const uploadFile = async (file: FileUpload): Promise<UploadResult> => {
         Key: objectName,
         ACL: "public-read",
       });
-      let url;
-      upload.on("error", () => {
-        throw new Error("Error occured while uploading");
-      });
 
-      upload.on("part", (details) => {
-        console.log("hello");
-      });
-
-      upload.on("uploaded", (details) => {
-        url = details.Location;
-      });
+      // handle events for s3-upload-stream
 
       readStream.pipe(upload);
 
+      const end = new Promise<string | null>((resolve, reject) => {
+        upload.on("error", () => {
+          reject("Error occured on file uploading");
+        });
+
+        upload.on("uploaded", (details) => {
+          resolve(details.Location);
+        });
+      });
+      const url = await end;
       return {
         ok: true,
         ...(url && { url }),

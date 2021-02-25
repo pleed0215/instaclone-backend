@@ -10,6 +10,9 @@ import {
   UpdateProfileInput,
   UpdateProfileOutput,
   SeeFollowersInput,
+  SeeFollowersOutput,
+  SeeFollowingsInput,
+  SeeFollowingsOutput,
 } from "../../dtos/user/user.dto";
 import { prismaClient } from "../../prisma";
 import { SECRET_KEY } from "../../utils";
@@ -17,7 +20,6 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { uploadFile } from "../../aws/s3";
 import { User } from "@generated/type-graphql";
-import { asArray } from "graphql-tools";
 
 export class UserService {
   async seeProfile(input: SeeProfileInput): Promise<SeeprofileOutput> {
@@ -137,6 +139,7 @@ export class UserService {
           const uploadResult = await uploadFile(await avatarInput);
           if (uploadResult.ok) {
             avatar = uploadResult.url;
+            console.log(uploadResult);
           } else {
             throw new Error("Failed to upload");
           }
@@ -187,6 +190,7 @@ export class UserService {
         );
       }
 
+      // TODO: follower가 많아질 수록 비효율적인 코드이므로 수정이 필요합니다.
       const userDetail = await prismaClient.user.findUnique({
         where: { id: authUser.id },
         select: {
@@ -260,21 +264,95 @@ export class UserService {
     pageSize,
   }: SeeFollowersInput): Promise<SeeFollowersOutput> {
     try {
-      const user = await prismaClient.user.findUnique({
-        where: { username },
-        select: {
-          followers: true,
+      // 제대로 작동 여부 확인 못함.
+      const temp = await prismaClient.user.count({
+        where: {
+          following: {
+            some: {
+              username,
+            },
+          },
         },
       });
-      const totalCount = user?.followers.length!;
-      const totalPage = Math.ceil(totalCount / pageSize);
 
-      const followers = await prismaClient.user.findUnique({
-        where: { username },
-        select: {
-          followers: true,
+      const totalCount = temp; //user?.followers.length!;
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const lastPageCount = totalCount % pageSize;
+      const currentCount = page < totalPage ? pageSize : lastPageCount;
+      const currentPage = page < totalPage ? page : totalPage;
+      const startIndex = (currentPage - 1) * pageSize;
+      const followers = await prismaClient.user.findMany({
+        where: {
+          following: {
+            some: {
+              username,
+            },
+          },
+        },
+        skip: startIndex,
+        take: pageSize,
+      });
+      //const followers = user?.followers.slice(startIndex, currentCount);
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage,
+        pageSize,
+        followers,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+  async seeFollowings({
+    username,
+    page,
+    pageSize,
+  }: SeeFollowingsInput): Promise<SeeFollowingsOutput> {
+    try {
+      const temp = await prismaClient.user.count({
+        where: {
+          followers: {
+            some: {
+              username,
+            },
+          },
         },
       });
+
+      const totalCount = temp; //user?.following.length!;
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const lastPageCount = totalCount % pageSize;
+      const currentCount = page < totalPage ? pageSize : lastPageCount;
+      const currentPage = page < totalPage ? page : totalPage;
+      const startIndex = (currentPage - 1) * pageSize;
+      const followings = await prismaClient.user.findMany({
+        where: {
+          followers: {
+            some: {
+              username,
+            },
+          },
+        },
+        skip: startIndex,
+        take: pageSize,
+      }); //user?.following.slice(startIndex, currentCount);
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage,
+        pageSize,
+        followings,
+      };
     } catch (e) {
       return {
         ok: false,

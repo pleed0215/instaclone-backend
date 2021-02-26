@@ -1,4 +1,14 @@
-import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  ResolverInterface,
+  Root,
+} from "type-graphql";
 import { User } from "@generated/type-graphql";
 import { prismaClient } from "../../prisma";
 import {
@@ -75,5 +85,15 @@ export class UserResolver {
     @Arg("input") input: SeeFollowingsInput
   ): Promise<SeeFollowingsOutput> {
     return this.userService.seeFollowings(input);
+  }
+
+  @FieldResolver((types) => Int)
+  totalFollowers(@Root() user: User): Promise<number> {
+    return this.userService.totalFollowers(user.username);
+  }
+
+  @FieldResolver((types) => Int)
+  totalFollowings(@Root() user: User): Promise<number> {
+    return this.userService.totalFollowings(user.username);
   }
 }

@@ -360,4 +360,37 @@ export class UserService {
       };
     }
   }
+
+  async totalFollowers(username): Promise<number> {
+    try {
+      const count = await prismaClient.user.count({
+        where: {
+          following: {
+            some: {
+              username,
+            },
+          },
+        },
+      });
+      return count;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+  async totalFollowings(username): Promise<number> {
+    try {
+      const count = await prismaClient.user.count({
+        where: {
+          followers: {
+            some: {
+              username,
+            },
+          },
+        },
+      });
+      return count;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
 }

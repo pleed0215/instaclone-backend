@@ -13,7 +13,6 @@
     "strict": false,
     "noImplicitAny": false,
     "strictNullChecks": true,
-    "strictPropertyInitialization": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
     "sourceMap": true,

@@ -155,3 +155,15 @@ export class SeeFollowingsOutput extends CommonPaginatedOutput {
   @Field((type) => [User], { nullable: true })
   followings?: User[];
 }
+
+@InputType()
+export class SearchUserInput extends CommonPaginatedInput {
+  @Field((type) => String)
+  keyword: string;
+}
+
+@ObjectType()
+export class SearchUserOutput extends CommonPaginatedOutput {
+  @Field((type) => [User], { nullable: true })
+  results?: User[];
+}

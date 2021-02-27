@@ -28,7 +28,7 @@ const app = express();
 const main = async () => {
   const { typeDefs, resolvers: appResolvers } = await buildTypeDefsAndResolvers(
     {
-      resolvers: [__dirname + "/**/*.resolver.{ts,js}"],
+      resolvers: [__dirname + "/**/*.resolvers.{ts,js}"],
       authChecker: customAuthChecker,
     }
   );

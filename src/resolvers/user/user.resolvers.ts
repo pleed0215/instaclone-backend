@@ -16,6 +16,8 @@ import {
   CreateAccountOutput,
   LoginInput,
   LoginOutput,
+  SearchUserInput,
+  SearchUserOutput,
   SeeFollowersInput,
   SeeFollowersOutput,
   SeeFollowingsInput,
@@ -88,12 +90,39 @@ export class UserResolver {
   }
 
   @FieldResolver((types) => Int)
+  @Authorized()
   totalFollowers(@Root() user: User): Promise<number> {
     return this.userService.totalFollowers(user.username);
   }
 
   @FieldResolver((types) => Int)
+  @Authorized()
   totalFollowings(@Root() user: User): Promise<number> {
     return this.userService.totalFollowings(user.username);
+  }
+
+  @FieldResolver((type) => Boolean)
+  @Authorized()
+  isMe(@AuthUser() authUser: User, @Root() user: User): Promise<boolean> {
+    return this.userService.isMe(authUser, user.username);
+  }
+  @FieldResolver((type) => Boolean)
+  @Authorized()
+  isFollowing(
+    @AuthUser() authUser: User,
+    @Root() user: User
+  ): Promise<boolean> {
+    return this.userService.isFollowing(authUser, user.username);
+  }
+  @FieldResolver((type) => Boolean)
+  @Authorized()
+  isFollower(@AuthUser() authUser: User, @Root() user: User): Promise<boolean> {
+    return this.userService.isFollower(authUser, user.username);
+  }
+
+  @Query((type) => SearchUserOutput)
+  @Authorized()
+  searchUser(@Arg("input") input: SearchUserInput): Promise<SearchUserOutput> {
+    return this.userService.searchUser(input);
   }
 }

@@ -13,6 +13,8 @@ import {
   SeeFollowersOutput,
   SeeFollowingsInput,
   SeeFollowingsOutput,
+  SearchUserInput,
+  SearchUserOutput,
 } from "../../dtos/user/user.dto";
 import { prismaClient } from "../../prisma";
 import { SECRET_KEY } from "../../utils";
@@ -141,6 +143,7 @@ export class UserService {
             avatar = uploadResult.url;
             console.log(uploadResult);
           } else {
+            console.log(uploadResult.error);
             throw new Error("Failed to upload");
           }
         }
@@ -391,6 +394,111 @@ export class UserService {
       return count;
     } catch (e) {
       throw new Error(e.message);
+    }
+  }
+
+  async isMe(authUser: User, username): Promise<boolean> {
+    try {
+      return authUser.username === username;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
+  async isFollowing(authUser: User, username): Promise<boolean> {
+    try {
+      /*const followingsWithName = await prismaClient.user
+        .findUnique({
+          where: {
+            username: authUser.username,
+          },
+        })
+        .following({
+          where: {
+            username,
+          },
+        });
+
+      return followingsWithName.length !== 0;*/
+      const exist = await prismaClient.user.count({
+        where: {
+          username,
+          following: {
+            some: {
+              username,
+            },
+          },
+        },
+      });
+      return Boolean(exist);
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
+  async isFollower(authUser: User, username): Promise<boolean> {
+    try {
+      const followersWithName = await prismaClient.user
+        .findUnique({
+          where: {
+            username: authUser.username,
+          },
+        })
+        .followers({
+          where: {
+            username,
+          },
+        });
+
+      return followersWithName.length !== 0;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
+  async searchUser({
+    keyword,
+    page,
+    pageSize,
+  }: SearchUserInput): Promise<SearchUserOutput> {
+    try {
+      const totalCount = await prismaClient.user.count({
+        where: {
+          username: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+        },
+      });
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const results = await prismaClient.user.findMany({
+        where: {
+          username: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      });
+
+      const currentCount = results.length;
+      const currentPage = page;
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentPage,
+        currentCount,
+        pageSize,
+        results,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
     }
   }
 }

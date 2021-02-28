@@ -32,13 +32,12 @@ const main = async () => {
       authChecker: customAuthChecker,
     }
   );
-  // resolvers, and types, made from app
+  // resolvers, and typedefs, made from app
   const appSchema = makeExecutableSchema({ typeDefs, resolvers: appResolvers });
 
-  // resolvers from prisma
+  // resolvers & typedefs from prisma
   schema = await buildSchema({
     resolvers,
-    validate: false,
     authChecker: customAuthChecker,
   });
   const totalSchema = stitchSchemas({ subschemas: [appSchema, schema] });

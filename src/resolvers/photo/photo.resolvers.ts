@@ -12,11 +12,15 @@ import {
 import { Photo, HashTag } from "@generated/type-graphql";
 import { PhotoService } from "./photo.service";
 import {
+  SearchPhotoInput,
+  SearchPhotoOutput,
   SeeHashTagInput,
   SeeHashTagOutput,
   SeeHashTagPhotoOutput,
   SeePhotoDetailInput,
   SeePhotoDetailOutput,
+  UpdatePhotoInput,
+  UpdatePhotoOutput,
   UploadPhotoInput,
   UploadPhotoOutput,
 } from "../../dtos/photo/photo.dto";
@@ -42,6 +46,22 @@ export class PhotoResolvers {
     @Arg("input") input: SeePhotoDetailInput
   ): Promise<SeePhotoDetailOutput> {
     return this.photoService.seePhotoDetail(input);
+  }
+
+  @Query((returns) => SearchPhotoOutput)
+  searchPhotos(
+    @Arg("input") input: SearchPhotoInput
+  ): Promise<SearchPhotoOutput> {
+    return this.photoService.searchPhotos(input);
+  }
+
+  @Mutation((returns) => UpdatePhotoOutput)
+  // due to prisma generated... changed uploadPhoto to editPhoto.. not to use deuplicated name.
+  editPhoto(
+    @AuthUser() authUser,
+    @Arg("input") input: UpdatePhotoInput
+  ): Promise<UpdatePhotoOutput> {
+    return this.photoService.updatePhoto(authUser, input);
   }
 }
 

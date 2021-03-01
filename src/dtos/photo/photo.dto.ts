@@ -27,19 +27,9 @@ export class SeePhotoDetailInput {
 }
 
 @ObjectType()
-@InputType("PhotoDetailInput", { isAbstract: true })
-export class PhotoDetail extends Photo {
-  @Field((type) => User)
-  user: User;
-
-  @Field((type) => [HashTag])
-  hashtags: HashTag[];
-}
-
-@ObjectType()
 export class SeePhotoDetailOutput extends CommonOutput {
-  @Field((type) => PhotoDetail, { nullable: true })
-  photo?: PhotoDetail;
+  @Field((type) => Photo, { nullable: true })
+  photo?: Photo;
 }
 
 @InputType()
@@ -71,3 +61,30 @@ export class SeeHashTagPhotoOutput {
   @Field((type) => [Photo], { nullable: true })
   photos?: Photo[];
 }
+
+@InputType()
+export class SearchPhotoInput extends CommonPaginatedInput {
+  @Field((type) => String)
+  keyword: string;
+}
+
+@ObjectType()
+export class SearchPhotoOutput extends CommonPaginatedOutput {
+  @Field((type) => [Photo])
+  photos?: Photo[];
+}
+
+@InputType()
+export class UpdatePhotoInput {
+  @Field((type) => Int)
+  id: number;
+
+  @Field((type) => GraphQLUpload, { nullable: true })
+  file?: FileUpload;
+
+  @Field((type) => String, { nullable: true })
+  caption?: string;
+}
+
+@ObjectType()
+export class UpdatePhotoOutput extends CommonOutput {}

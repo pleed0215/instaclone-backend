@@ -2,9 +2,12 @@ import * as AWS from "aws-sdk";
 import { FileUpload } from "../dtos/file.upload";
 import fs from "fs";
 
-interface UploadResult {
+interface RemoveResult {
   ok: boolean;
   error?: string;
+}
+
+interface UploadResult extends RemoveResult {
   url?: string;
 }
 
@@ -56,6 +59,63 @@ export const uploadFile = async (file: FileUpload): Promise<UploadResult> => {
       };
     } else {
       throw new Error("AWS Credential failed");
+    }
+  } catch (e) {
+    return {
+      ok: false,
+      error: e.message,
+    };
+  }
+};
+
+/*url: RegExp['$&'],
+
+protocol:RegExp.$2,
+
+host:RegExp.$3,
+
+path:RegExp.$4,
+
+file:RegExp.$6,
+
+query:RegExp.$7,
+
+hash:RegExp.$8*/
+// from: https://stackoverflow.com/questions/27745/getting-parts-of-a-url-regex
+const urlRegex = /^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/g;
+
+export const removeFile = async (url: string) => {
+  try {
+    if (process.env.AWS_ACCESS_KEY && process.env.AWS_SECRET_KEY) {
+      AWS.config.update({
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY,
+          secretAccessKey: process.env.AWS_SECRET_KEY,
+        },
+      });
+      if (url.includes(BUCKET_NAME)) {
+        const parsed = url.split(urlRegex);
+        // look up above comment on defining urlRegex.
+        const key = parsed[4] + parsed[6];
+
+        const result = await new AWS.S3()
+          .deleteObject({
+            Bucket: BUCKET_NAME,
+            Key: key,
+          })
+          .promise();
+
+        return {
+          ok: true,
+        };
+      } else {
+        // return ok, even if it's not on S3 BUCKET
+        return {
+          ok: true,
+        };
+      }
+    } else {
+      throw new Error("AWS credential failed");
     }
   } catch (e) {
     return {

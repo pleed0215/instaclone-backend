@@ -1,19 +1,19 @@
-import { uploadFile } from "../../aws/s3";
+import { removeFile, uploadFile } from "../../aws/s3";
 import {
+  SearchPhotoInput,
+  SearchPhotoOutput,
   SeeHashTagInput,
   SeeHashTagOutput,
   SeeHashTagPhotoOutput,
   SeePhotoDetailInput,
   SeePhotoDetailOutput,
+  UpdatePhotoInput,
+  UpdatePhotoOutput,
   UploadPhotoInput,
   UploadPhotoOutput,
 } from "../../dtos/photo/photo.dto";
 import { prismaClient } from "../../prisma";
-import {
-  User,
-  HashTag,
-  HashTagCreateOrConnectWithoutPhotosInput,
-} from "@generated/type-graphql";
+import { User, HashTag } from "@generated/type-graphql";
 
 export class PhotoService {
   parseHashTag(toParse: string): string[] {
@@ -32,11 +32,9 @@ export class PhotoService {
   ): Promise<UploadPhotoOutput> {
     try {
       const uploadResult = await uploadFile(await file);
-      //const uploadResult = { ok: false, error: "jajaja", url: "jaja" };
-      let connectOrCreateInput: Array<HashTagCreateOrConnectWithoutPhotosInput> = [];
       let hashtags: string[] = [];
       if (caption) {
-        hashtags = this.parseHashTag(caption);
+        hashtags = [...this.parseHashTag(caption)];
       }
 
       if (uploadResult.ok && uploadResult.url) {
@@ -175,6 +173,113 @@ export class PhotoService {
       };
     } catch {
       throw new Error("Fetching hashtag photo error.");
+    }
+  }
+
+  async searchPhotos({
+    keyword,
+    page,
+    pageSize,
+  }: SearchPhotoInput): Promise<SearchPhotoOutput> {
+    try {
+      const totalCount = await prismaClient.photo.count({
+        where: {
+          caption: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+        },
+      });
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const photos = await prismaClient.photo.findMany({
+        where: {
+          caption: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      });
+      const currentCount = photos.length;
+      const currentPage = page;
+
+      return {
+        ok: true,
+        totalPage,
+        totalCount,
+        currentCount,
+        currentPage,
+        pageSize,
+        photos,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async updatePhoto(
+    authUser: User,
+    { id, file, caption }: UpdatePhotoInput
+  ): Promise<UpdatePhotoOutput> {
+    try {
+      const willUpdate = await prismaClient.photo.findUnique({
+        where: { id },
+        include: { hashtags: { select: { hashtag: true } } },
+      });
+      if (willUpdate) {
+        if (willUpdate.userId !== authUser.id) {
+          throw new Error("You do not have permission to access this photo");
+        }
+        let url;
+        let hashtags: string[] = [];
+        if (file) {
+          if (willUpdate.file !== null) {
+            await removeFile(willUpdate.file);
+          }
+          const upload = await uploadFile(await file);
+          if (upload.ok && upload.url) {
+            url = upload.url;
+          } else {
+            throw new Error(upload.error);
+          }
+        }
+
+        if (caption) {
+          hashtags = [...this.parseHashTag(caption)];
+        }
+
+        await prismaClient.photo.update({
+          where: { id },
+          data: {
+            ...(url && { file: url }),
+            ...(caption && { caption }),
+            hashtags: {
+              disconnect: [...willUpdate.hashtags],
+              connectOrCreate: [
+                ...hashtags.map((hashtag) => ({
+                  where: { hashtag },
+                  create: { hashtag },
+                })),
+              ],
+            },
+          },
+        });
+
+        return {
+          ok: true,
+        };
+      } else {
+        throw new Error("No photo record matches that id.");
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
     }
   }
 }

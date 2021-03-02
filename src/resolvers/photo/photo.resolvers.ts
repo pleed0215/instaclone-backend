@@ -19,6 +19,8 @@ import {
   SeeHashTagPhotoOutput,
   SeePhotoDetailInput,
   SeePhotoDetailOutput,
+  ToggleLikeInput,
+  ToggleLikeOutput,
   UpdatePhotoInput,
   UpdatePhotoOutput,
   UploadPhotoInput,
@@ -62,6 +64,15 @@ export class PhotoResolvers {
     @Arg("input") input: UpdatePhotoInput
   ): Promise<UpdatePhotoOutput> {
     return this.photoService.updatePhoto(authUser, input);
+  }
+
+  @Mutation((returns) => ToggleLikeOutput)
+  @Authorized()
+  toggleLike(
+    @AuthUser() authUser,
+    @Arg("input") input: ToggleLikeInput
+  ): Promise<ToggleLikeOutput> {
+    return this.photoService.toggleLike(authUser, input);
   }
 }
 

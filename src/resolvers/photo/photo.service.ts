@@ -7,6 +7,8 @@ import {
   SeeHashTagPhotoOutput,
   SeePhotoDetailInput,
   SeePhotoDetailOutput,
+  ToggleLikeInput,
+  ToggleLikeOutput,
   UpdatePhotoInput,
   UpdatePhotoOutput,
   UploadPhotoInput,
@@ -274,6 +276,67 @@ export class PhotoService {
         };
       } else {
         throw new Error("No photo record matches that id.");
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async toggleLike(
+    authUser: User,
+    { id }: ToggleLikeInput
+  ): Promise<ToggleLikeOutput> {
+    try {
+      const photo = await prismaClient.photo.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (photo) {
+        const like = await prismaClient.like.findUnique({
+          where: {
+            photoId_userId: {
+              photoId: id,
+              userId: authUser.id,
+            },
+          },
+        });
+
+        if (like) {
+          await prismaClient.like.delete({
+            where: {
+              id: like.id,
+            },
+          });
+          return {
+            ok: true,
+            message: `Unliked photo id: ${id}.`,
+          };
+        } else {
+          await prismaClient.like.create({
+            data: {
+              photo: {
+                connect: {
+                  id,
+                },
+              },
+              user: {
+                connect: {
+                  id: authUser.id,
+                },
+              },
+            },
+          });
+          return {
+            ok: true,
+            message: `Liked photo id: ${id}`,
+          };
+        }
+      } else {
+        throw new Error(`Photo id ${id} is not found`);
       }
     } catch (e) {
       return {

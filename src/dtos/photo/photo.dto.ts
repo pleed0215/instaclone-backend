@@ -88,3 +88,15 @@ export class UpdatePhotoInput {
 
 @ObjectType()
 export class UpdatePhotoOutput extends CommonOutput {}
+
+@InputType()
+export class ToggleLikeInput {
+  @Field((type) => Int)
+  id: number;
+}
+
+@ObjectType()
+export class ToggleLikeOutput extends CommonOutput {
+  @Field((type) => String, { nullable: true })
+  message?: string;
+}

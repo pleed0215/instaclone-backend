@@ -124,3 +124,12 @@ export class SeeLikePhotosOutput extends CommonPaginatedOutput {
   @Field((type) => [Photo], { nullable: true })
   likePhotos?: Photo[];
 }
+
+@InputType()
+export class SeeFeedsInput extends CommonPaginatedInput {}
+
+@ObjectType()
+export class SeeFeedsOutput extends CommonPaginatedOutput {
+  @Field((type) => [Photo], { nullable: true })
+  feeds?: Photo[];
+}

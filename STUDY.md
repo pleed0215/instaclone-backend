@@ -55,3 +55,7 @@ ReadStream을 s3 upload 하려면... 방법은 잘 못 찾았는데 패키지는
 https://www.npmjs.com/package/s3-upload-stream
 
 prisma는 follower/following relation 만들기가 쉽다.
+
+include/select의 차이
+
+- include는 select + relations개념.

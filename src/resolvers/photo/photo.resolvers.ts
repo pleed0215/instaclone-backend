@@ -13,6 +13,8 @@ import { PhotoService } from "./photo.service";
 import {
   SearchPhotoInput,
   SearchPhotoOutput,
+  SeeFeedsInput,
+  SeeFeedsOutput,
   SeeHashTagInput,
   SeeHashTagOutput,
   SeeHashTagPhotoOutput,
@@ -95,6 +97,15 @@ export class PhotoResolvers {
     @Arg("input") input: SeeLikePhotosInput
   ): Promise<SeeLikePhotosOutput> {
     return this.photoService.seeLikePhotos(input);
+  }
+
+  @Query((returns) => SeeFeedsOutput)
+  @Authorized()
+  seeFeeds(
+    @AuthUser() authUser,
+    @Arg("input") input: SeeFeedsInput
+  ): Promise<SeeFeedsOutput> {
+    return this.photoService.seeFeeds(authUser, input);
   }
 }
 

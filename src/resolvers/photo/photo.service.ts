@@ -17,6 +17,8 @@ import {
   UpdatePhotoOutput,
   UploadPhotoInput,
   UploadPhotoOutput,
+  SeeFeedsInput,
+  SeeFeedsOutput,
 } from "../../dtos/photo/photo.dto";
 import { prismaClient } from "../../prisma";
 import { User, HashTag } from "@generated/type-graphql";
@@ -92,10 +94,10 @@ export class PhotoService {
         include: {
           hashtags: true,
           user: true,
+          likes: true,
         },
       });
       if (photo) {
-        console.log(photo);
         return {
           ok: true,
           photo,
@@ -450,6 +452,77 @@ export class PhotoService {
         currentPage,
         pageSize,
         likePhotos,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async seeFeeds(
+    authUser: User,
+    { page, pageSize }: SeeFeedsInput
+  ): Promise<SeeFeedsOutput> {
+    try {
+      const totalCount = await prismaClient.photo.count({
+        where: {
+          OR: [
+            {
+              user: {
+                following: {
+                  some: {
+                    id: authUser.id,
+                  },
+                },
+              },
+            },
+            {
+              userId: authUser.id,
+            },
+          ],
+        },
+      });
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const feeds = await prismaClient.photo.findMany({
+        where: {
+          OR: [
+            {
+              user: {
+                following: {
+                  some: {
+                    id: authUser.id,
+                  },
+                },
+              },
+            },
+            {
+              userId: authUser.id,
+            },
+          ],
+        },
+        include: {
+          user: true,
+          hashtags: true,
+          likes: true,
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      const currentCount = feeds.length;
+      const currentPage = page;
+      return {
+        ok: true,
+        totalPage,
+        totalCount,
+        currentCount,
+        currentPage,
+        pageSize,
+        feeds,
       };
     } catch (e) {
       return {

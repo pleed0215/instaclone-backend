@@ -19,7 +19,7 @@ import {
   UploadPhotoOutput,
   SeeFeedsInput,
   SeeFeedsOutput,
-} from "../../dtos/photo/photo.dto";
+} from "../../dtos/photo.dto";
 import { prismaClient } from "../../prisma";
 import { User, HashTag } from "@generated/type-graphql";
 

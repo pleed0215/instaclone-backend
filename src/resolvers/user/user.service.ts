@@ -15,7 +15,7 @@ import {
   SeeFollowingsOutput,
   SearchUserInput,
   SearchUserOutput,
-} from "../../dtos/user/user.dto";
+} from "../../dtos/user.dto";
 import { prismaClient } from "../../prisma";
 import { SECRET_KEY } from "../../utils";
 import * as bcrypt from "bcrypt";

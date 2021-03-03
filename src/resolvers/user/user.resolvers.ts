@@ -28,7 +28,7 @@ import {
   ToggleFollowUserOutput,
   UpdateProfileInput,
   UpdateProfileOutput,
-} from "../../dtos/user/user.dto";
+} from "../../dtos/user.dto";
 
 import { UserService } from "./user.service";
 import { AuthUser } from "../../auth/auth.decorator";

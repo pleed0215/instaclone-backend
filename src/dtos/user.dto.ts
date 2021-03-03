@@ -4,10 +4,10 @@ import {
   CommonOutput,
   CommonPaginatedInput,
   CommonPaginatedOutput,
-} from "../common.dto";
+} from "./common.dto";
 import { User } from "@generated/type-graphql";
 import { GraphQLUpload } from "graphql-tools";
-import { FileUpload } from "../file.upload";
+import { FileUpload } from "./file.upload";
 
 @InputType("UserInput", { isAbstract: true })
 @ObjectType()

@@ -43,7 +43,7 @@ const main = async () => {
   const totalSchema = stitchSchemas({ subschemas: [appSchema, schema] });
 
   const server = new ApolloServer({
-    schema: totalSchema,
+    schema: appSchema,
     playground: true,
     // authentication part.
     context: async ({ req }): Promise<Context> => {

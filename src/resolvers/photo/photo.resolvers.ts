@@ -30,7 +30,7 @@ import {
   UpdatePhotoOutput,
   UploadPhotoInput,
   UploadPhotoOutput,
-} from "../../dtos/photo/photo.dto";
+} from "../../dtos/photo.dto";
 import { AuthUser } from "../../auth/auth.decorator";
 
 @Resolver((of) => Photo)

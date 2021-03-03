@@ -4,8 +4,8 @@ import {
   CommonOutput,
   CommonPaginatedInput,
   CommonPaginatedOutput,
-} from "../common.dto";
-import { FileUpload } from "../file.upload";
+} from "./common.dto";
+import { FileUpload } from "./file.upload";
 import { Photo, User, HashTag } from "@generated/type-graphql";
 
 @InputType()

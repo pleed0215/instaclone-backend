@@ -147,6 +147,7 @@ export class CommentService {
         take: pageSize,
         include: {
           user: true,
+          photo: true,
         },
         orderBy: {
           createdAt: "desc",

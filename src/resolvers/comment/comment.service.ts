@@ -14,14 +14,22 @@ import { prismaClient } from "../../prisma";
 export class CommentService {
   async addComment(
     { id: userId }: User,
-    { photoId, comment }: AddCommentInput
+    { photoId, payload }: AddCommentInput
   ): Promise<AddCommentOutput> {
     try {
       const newComment = await prismaClient.comment.create({
         data: {
-          comment,
-          photoId,
-          userId,
+          payload,
+          photo: {
+            connect: {
+              id: photoId,
+            },
+          },
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
         },
       });
       if (newComment) {
@@ -41,7 +49,7 @@ export class CommentService {
 
   async editComment(
     { id: userId }: User,
-    { id, comment }: EditCommentInput
+    { id, payload }: EditCommentInput
   ): Promise<EditCommentOutput> {
     try {
       const willUpdated = await prismaClient.comment.findUnique({
@@ -61,7 +69,7 @@ export class CommentService {
             id,
           },
           data: {
-            comment,
+            payload,
           },
         });
         if (updated) {
@@ -143,12 +151,11 @@ export class CommentService {
         where: {
           photoId,
         },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
         include: {
           user: true,
-          photo: true,
         },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
         orderBy: {
           createdAt: "desc",
         },

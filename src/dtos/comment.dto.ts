@@ -12,7 +12,7 @@ export class AddCommentInput {
   photoId: number;
 
   @Field((type) => String)
-  comment: string;
+  payload: string;
 }
 
 @ObjectType()
@@ -24,7 +24,7 @@ export class EditCommentInput {
   id: number;
 
   @Field((type) => String)
-  comment: string;
+  payload: string;
 }
 
 @ObjectType()

@@ -5,6 +5,10 @@ import {
   SeeHashTagInput,
   SeeHashTagOutput,
   SeeHashTagPhotoOutput,
+  SeeLikeUsersInput,
+  SeeLikeUsersOutput,
+  SeeLikePhotosInput,
+  SeeLikePhotosOutput,
   SeePhotoDetailInput,
   SeePhotoDetailOutput,
   ToggleLikeInput,
@@ -338,6 +342,115 @@ export class PhotoService {
       } else {
         throw new Error(`Photo id ${id} is not found`);
       }
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async numLikes(photoId: number): Promise<number> {
+    try {
+      const count = await prismaClient.like.count({
+        where: {
+          photoId,
+        },
+      });
+
+      return count;
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
+  async seeLikeUsers({
+    photoId,
+    page,
+    pageSize,
+  }: SeeLikeUsersInput): Promise<SeeLikeUsersOutput> {
+    try {
+      const totalCount = await prismaClient.user.count({
+        where: {
+          likes: {
+            some: {
+              photoId,
+            },
+          },
+        },
+      });
+
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const likeUsers = await prismaClient.user.findMany({
+        where: {
+          likes: {
+            some: {
+              photoId,
+            },
+          },
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      });
+      const currentCount = likeUsers.length;
+      const currentPage = page;
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage,
+        pageSize,
+        likeUsers,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async seeLikePhotos({
+    userId,
+    page,
+    pageSize,
+  }: SeeLikePhotosInput): Promise<SeeLikePhotosOutput> {
+    try {
+      const totalCount = await prismaClient.photo.count({
+        where: {
+          likes: {
+            some: {
+              userId,
+            },
+          },
+        },
+      });
+      const totalPage = Math.ceil(totalCount / pageSize);
+      const likePhotos = await prismaClient.photo.findMany({
+        where: {
+          likes: {
+            some: {
+              userId,
+            },
+          },
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      });
+      const currentCount = likePhotos.length;
+      const currentPage = page;
+
+      return {
+        ok: true,
+        totalCount,
+        totalPage,
+        currentCount,
+        currentPage,
+        pageSize,
+        likePhotos,
+      };
     } catch (e) {
       return {
         ok: false,

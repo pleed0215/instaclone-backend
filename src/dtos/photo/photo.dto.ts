@@ -100,3 +100,27 @@ export class ToggleLikeOutput extends CommonOutput {
   @Field((type) => String, { nullable: true })
   message?: string;
 }
+
+@InputType()
+export class SeeLikeUsersInput extends CommonPaginatedInput {
+  @Field((type) => Int)
+  photoId: number;
+}
+
+@ObjectType()
+export class SeeLikeUsersOutput extends CommonPaginatedOutput {
+  @Field((type) => [User], { nullable: true })
+  likeUsers?: User[];
+}
+
+@InputType()
+export class SeeLikePhotosInput extends CommonPaginatedInput {
+  @Field((type) => Int)
+  userId: number;
+}
+
+@ObjectType()
+export class SeeLikePhotosOutput extends CommonPaginatedOutput {
+  @Field((type) => [Photo], { nullable: true })
+  likePhotos?: Photo[];
+}

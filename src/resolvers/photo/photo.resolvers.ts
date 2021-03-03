@@ -1,6 +1,5 @@
 import {
   Arg,
-  ArgsType,
   Authorized,
   FieldResolver,
   Int,
@@ -17,6 +16,10 @@ import {
   SeeHashTagInput,
   SeeHashTagOutput,
   SeeHashTagPhotoOutput,
+  SeeLikePhotosInput,
+  SeeLikePhotosOutput,
+  SeeLikeUsersInput,
+  SeeLikeUsersOutput,
   SeePhotoDetailInput,
   SeePhotoDetailOutput,
   ToggleLikeInput,
@@ -73,6 +76,25 @@ export class PhotoResolvers {
     @Arg("input") input: ToggleLikeInput
   ): Promise<ToggleLikeOutput> {
     return this.photoService.toggleLike(authUser, input);
+  }
+
+  @FieldResolver((returns) => Int)
+  numLikes(@Root() photo: Photo): Promise<number> {
+    return this.photoService.numLikes(photo.id);
+  }
+
+  @Query((returns) => SeeLikeUsersOutput)
+  seeLikeUsers(
+    @Arg("input") input: SeeLikeUsersInput
+  ): Promise<SeeLikeUsersOutput> {
+    return this.photoService.seeLikeUsers(input);
+  }
+
+  @Query((returns) => SeeLikePhotosOutput)
+  seeLikePhotos(
+    @Arg("input") input: SeeLikePhotosInput
+  ): Promise<SeeLikePhotosOutput> {
+    return this.photoService.seeLikePhotos(input);
   }
 }
 

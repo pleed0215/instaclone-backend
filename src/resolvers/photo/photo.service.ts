@@ -531,4 +531,12 @@ export class PhotoService {
       };
     }
   }
+
+  async numComments(photoId: number): Promise<number> {
+    return await prismaClient.comment.count({
+      where: {
+        photoId,
+      },
+    });
+  }
 }

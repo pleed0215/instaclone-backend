@@ -43,7 +43,7 @@ const main = async () => {
   const totalSchema = stitchSchemas({ subschemas: [appSchema, schema] });
 
   const server = new ApolloServer({
-    schema: appSchema,
+    schema: totalSchema,
     playground: true,
     // authentication part.
     context: async ({ req }): Promise<Context> => {
@@ -73,6 +73,7 @@ const main = async () => {
       }
       const context = {
         user,
+        prisma: prismaClient,
       };
 
       return context;

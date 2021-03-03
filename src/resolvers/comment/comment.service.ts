@@ -10,6 +10,7 @@ import {
   SeeCommentsOutput,
 } from "../../dtos/comment.dto";
 import { prismaClient } from "../../prisma";
+import { Comment } from "@generated/type-graphql";
 
 export class CommentService {
   async addComment(
@@ -160,7 +161,7 @@ export class CommentService {
           createdAt: "desc",
         },
       });
-      console.log(comments);
+
       const currentCount = comments.length;
       const currentPage = page;
 
@@ -179,5 +180,9 @@ export class CommentService {
         error: e.message,
       };
     }
+  }
+
+  async isMine(authUser: User, comment: Comment): Promise<boolean> {
+    return authUser.id === comment.userId;
   }
 }

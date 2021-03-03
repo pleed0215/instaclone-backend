@@ -107,6 +107,11 @@ export class PhotoResolvers {
   ): Promise<SeeFeedsOutput> {
     return this.photoService.seeFeeds(authUser, input);
   }
+
+  @FieldResolver((returns) => Int)
+  numComments(@Root() photo: Photo): Promise<number> {
+    return this.photoService.numComments(photo.id);
+  }
 }
 
 @Resolver((of) => HashTag)

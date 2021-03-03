@@ -1,4 +1,12 @@
-import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { AuthUser } from "../../auth/auth.decorator";
 import {
   AddCommentInput,
@@ -11,6 +19,7 @@ import {
   SeeCommentsOutput,
 } from "../../dtos/comment.dto";
 import { CommentService } from "./comment.service";
+import { User, Comment } from "@generated/type-graphql";
 
 @Resolver((of) => Comment)
 export class CommentResolver {
@@ -29,7 +38,7 @@ export class CommentResolver {
 
   @Mutation((returns) => DeleteCommentOutput)
   @Authorized()
-  deleteComment(
+  removeComment(
     @AuthUser() authUser,
     @Arg("input") input: DeleteCommentInput
   ): Promise<DeleteCommentOutput> {
@@ -50,5 +59,14 @@ export class CommentResolver {
     @Arg("input") input: SeeCommentsInput
   ): Promise<SeeCommentsOutput> {
     return this.commentService.seeComments(input);
+  }
+
+  @FieldResolver((returns) => Boolean)
+  @Authorized()
+  isMine(
+    @AuthUser() authUser: User,
+    @Root() comment: Comment
+  ): Promise<boolean> {
+    return this.commentService.isMine(authUser, comment);
   }
 }

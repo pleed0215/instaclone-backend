@@ -6,7 +6,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,66 +15,89 @@ generator typegraphql {
 }
 
 model User {
-  id          Int         @id   @default(autoincrement())
-  firstName   String
-  lastName    String?
-  username    String      @unique
-  email       String      @unique
-  password    String
-  bio         String?
-  avatar      String?
+  id        Int     @id @default(autoincrement())
+  firstName String
+  lastName  String?
+  username  String  @unique
+  email     String  @unique
+  password  String
+  bio       String?
+  avatar    String?
 
-  followers   User[]      @relation("FollowRelation", references: [id])
-  following   User[]      @relation("FollowRelation", references: [id])
-  photos      Photo[]
-  likes       Like[]
-  comments    Comment[]
+  followers User[]    @relation("FollowRelation", references: [id])
+  following User[]    @relation("FollowRelation", references: [id])
+  photos    Photo[]
+  likes     Like[]
+  comments  Comment[]
+  rooms     Room[]
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Message   Message[]
 }
 
 model Photo {
-  id          Int         @id   @default(autoincrement())
-  user        User        @relation(fields:[userId], references: [id])
-  userId      Int
-  file        String
-  caption     String?
-  hashtags    HashTag[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  likes       Like[]
-  comments    Comment[]
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  file      String
+  caption   String?
+  hashtags  HashTag[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  likes     Like[]
+  comments  Comment[]
 }
 
 model HashTag {
-  id          Int         @id   @default(autoincrement())
-  hashtag     String      @unique
-  photos      Photo[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  hashtag   String   @unique
+  photos    Photo[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Like {
-  id          Int         @id   @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  photo       Photo       @relation(fields: [photoId], references: [id])
-  photoId     Int
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
-  @@unique([photoId, userId]) // how awesome.
+  photo   Photo @relation(fields: [photoId], references: [id])
+  photoId Int
+  user    User  @relation(fields: [userId], references: [id])
+  userId  Int
+  @@unique([photoId, userId])
 }
 
 model Comment {
-  id          Int         @id   @default(autoincrement())
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  photo       Photo       @relation(fields: [photoId], references: [id])
-  photoId     Int
-  user        User        @relation(fields: [userId], references: [id])
-  userId      Int
-  payload     String
+  photo   Photo  @relation(fields: [photoId], references: [id])
+  photoId Int
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+  payload String
+}
+
+model Room {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants User[]
+  messages     Message[]
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payload String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+  room    Room   @relation(fields: [roomId], references: [id])
+  roomId  Int
 }

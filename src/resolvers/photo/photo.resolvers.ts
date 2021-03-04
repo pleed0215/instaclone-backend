@@ -8,9 +8,11 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Photo, HashTag } from "@generated/type-graphql";
+import { User, Photo, HashTag } from "@generated/type-graphql";
 import { PhotoService } from "./photo.service";
 import {
+  DeletePhotoInput,
+  DeletePhotoOutput,
   SearchPhotoInput,
   SearchPhotoOutput,
   SeeFeedsInput,
@@ -111,6 +113,21 @@ export class PhotoResolvers {
   @FieldResolver((returns) => Int)
   numComments(@Root() photo: Photo): Promise<number> {
     return this.photoService.numComments(photo.id);
+  }
+
+  @FieldResolver((type) => Boolean)
+  @Authorized()
+  isMine(@AuthUser() authUser: User, @Root() { userId }: Photo) {
+    return authUser.id === userId;
+  }
+
+  @Mutation((returns) => DeletePhotoOutput)
+  @Authorized()
+  deletePhoto(
+    @AuthUser() authUser: User,
+    @Arg("input") input: DeletePhotoInput
+  ): Promise<DeletePhotoOutput> {
+    return this.photoService.deletePhoto(authUser, input);
   }
 }
 

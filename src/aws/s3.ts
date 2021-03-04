@@ -33,16 +33,22 @@ export const uploadFile = async (file: FileUpload): Promise<UploadResult> => {
       const readStream: fs.ReadStream = createReadStream();
 
       const objectName = `${Date.now()}_${filename}`;
+      /* s3-upload-stream을 사용하지 않고서는 AWS.S3.upload({
+        ...,
+        Body: readStream
+      })
+      이렇게 해도 되는 모양이다. 
+      https://nomadcoders.co/instaclone/lectures/2463 6:33
+      */
       const upload = s3Stream.upload({
         Bucket: BUCKET_NAME,
         Key: objectName,
         ACL: "public-read",
       });
 
-      // handle events for s3-upload-stream
-
       readStream.pipe(upload);
 
+      // handle events for s3-upload-stream
       const end = new Promise<string | null>((resolve, reject) => {
         upload.on("error", () => {
           reject("Error occured on file uploading");

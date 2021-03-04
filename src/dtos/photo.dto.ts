@@ -133,3 +133,12 @@ export class SeeFeedsOutput extends CommonPaginatedOutput {
   @Field((type) => [Photo], { nullable: true })
   feeds?: Photo[];
 }
+
+@InputType()
+export class DeletePhotoInput {
+  @Field((type) => Int)
+  id: number;
+}
+
+@ObjectType()
+export class DeletePhotoOutput extends CommonOutput {}

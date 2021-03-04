@@ -19,6 +19,8 @@ import {
   UploadPhotoOutput,
   SeeFeedsInput,
   SeeFeedsOutput,
+  DeletePhotoInput,
+  DeletePhotoOutput,
 } from "../../dtos/photo.dto";
 import { prismaClient } from "../../prisma";
 import { User, HashTag } from "@generated/type-graphql";
@@ -282,6 +284,40 @@ export class PhotoService {
         };
       } else {
         throw new Error("No photo record matches that id.");
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async deletePhoto(
+    authUser: User,
+    { id }: DeletePhotoInput
+  ): Promise<DeletePhotoOutput> {
+    try {
+      const photo = await prismaClient.photo.findUnique({
+        where: { id },
+      });
+
+      if (photo) {
+        if (photo.userId === authUser.id) {
+          if (photo.file) {
+            await removeFile(photo.file);
+          }
+          await prismaClient.photo.delete({ where: { id } });
+          return {
+            ok: true,
+          };
+        } else {
+          throw new Error(
+            `DeletePhoto Error: Photo id ${id}'s owner is not user id: ${authUser.id}`
+          );
+        }
+      } else {
+        throw new Error(`DeletePhoto Error: Photo id: ${id} is not found.`);
       }
     } catch (e) {
       return {

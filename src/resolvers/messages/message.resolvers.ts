@@ -1,6 +1,17 @@
-import { Arg, Authorized, Mutation, Query, Resolver } from "type-graphql";
-import { Room, Message } from "@generated/type-graphql";
 import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
+import { Room, Message, User } from "@generated/type-graphql";
+import {
+  FetchMessagesInput,
+  FetchMessagesOutput,
   SeeRoomInput,
   SeeRoomOutput,
   SeeRoomsOutput,
@@ -29,6 +40,19 @@ export class RoomResolver {
     @Arg("input") input: SeeRoomInput
   ): Promise<SeeRoomOutput> {
     return this.messageService.seeRoom(authUser, input);
+  }
+
+  @Mutation((returns) => FetchMessagesOutput)
+  fetchAndReadMessages(
+    @Arg("input") input: FetchMessagesInput
+  ): Promise<FetchMessagesOutput> {
+    return this.messageService.fetchMessages(input);
+  }
+
+  @FieldResolver((returns) => Int)
+  @Authorized()
+  numUnread(@AuthUser() authUser: User, @Root() room: Room): Promise<number> {
+    return this.messageService.numUnread(room.id, authUser.id);
   }
 }
 

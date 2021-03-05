@@ -1,5 +1,7 @@
 import { User, Room, Message } from "@generated/type-graphql";
 import {
+  FetchMessagesInput,
+  FetchMessagesOutput,
   SeeRoomInput,
   SeeRoomOutput,
   SeeRoomsOutput,
@@ -18,6 +20,10 @@ export class MessageService {
               id: authUser.id,
             },
           },
+        },
+        include: {
+          participants: true,
+          messages: false,
         },
       });
       return {
@@ -39,24 +45,49 @@ export class MessageService {
     try {
       let room: Room | null = null;
       if (userId) {
+        if (userId === authUser.id)
+          throw new Error("Cannot send message to self");
         const user = await prismaClient.user.findUnique({
           where: { id: userId },
         });
         if (user) {
-          room = await prismaClient.room.create({
-            data: {
-              participants: {
-                connect: [
-                  {
-                    id: userId,
+          room = await prismaClient.room.findFirst({
+            where: {
+              AND: [
+                {
+                  participants: {
+                    some: {
+                      id: userId,
+                    },
                   },
-                  {
-                    id: authUser.id,
+                },
+                {
+                  participants: {
+                    some: {
+                      id: authUser.id,
+                    },
                   },
-                ],
-              },
+                },
+              ],
             },
           });
+
+          if (!room) {
+            room = await prismaClient.room.create({
+              data: {
+                participants: {
+                  connect: [
+                    {
+                      id: userId,
+                    },
+                    {
+                      id: authUser.id,
+                    },
+                  ],
+                },
+              },
+            });
+          }
         } else {
           throw new Error(`User id: ${userId} is not exist`);
         }
@@ -108,6 +139,9 @@ export class MessageService {
             },
           },
         },
+        include: {
+          participants: true,
+        },
       });
 
       if (room) {
@@ -124,5 +158,87 @@ export class MessageService {
         error: e.message,
       };
     }
+  }
+
+  async fetchMessages({
+    roomId,
+    cursorId,
+    pageSize,
+  }: FetchMessagesInput): Promise<FetchMessagesOutput> {
+    try {
+      const checkMessage = await prismaClient.message.findFirst({
+        where: { id: cursorId },
+      });
+      let checkedCursorId: number | null = null;
+      let haveToSkipOne = true;
+
+      if (checkMessage) {
+        checkedCursorId = checkMessage.id;
+      } else {
+        haveToSkipOne = false;
+        const latestMessage = await prismaClient.message.findFirst({
+          where: { roomId },
+          orderBy: { createdAt: "desc" },
+        });
+        if (!latestMessage) {
+          throw new Error("No Message at all");
+        } else {
+          checkedCursorId = latestMessage?.id;
+        }
+      }
+
+      const messages = await prismaClient.message.findMany({
+        where: {
+          roomId,
+        },
+        take: pageSize,
+        skip: haveToSkipOne ? 1 : 0,
+        cursor: {
+          id: checkedCursorId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      const unreadMessagesIds = messages
+        .filter((m) => !m.isRead)
+        .map((m) => m.id);
+      await prismaClient.message.updateMany({
+        where: {
+          id: {
+            in: unreadMessagesIds,
+          },
+        },
+        data: {
+          isRead: true,
+        },
+      });
+
+      return {
+        ok: true,
+        messages,
+        count: messages.length,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e.message,
+      };
+    }
+  }
+
+  async numUnread(roomId: number, userId: number): Promise<number> {
+    return await prismaClient.message.count({
+      where: {
+        roomId,
+        isRead: false,
+        user: {
+          id: {
+            not: userId,
+          },
+        },
+      },
+    });
   }
 }

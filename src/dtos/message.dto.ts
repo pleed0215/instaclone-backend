@@ -1,6 +1,6 @@
 import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { CommonOutput } from "./common.dto";
-import { Room } from "@generated/type-graphql";
+import { Room, Message } from "@generated/type-graphql";
 
 @ObjectType()
 export class SeeRoomsOutput extends CommonOutput {
@@ -33,4 +33,25 @@ export class SeeRoomInput {
 export class SeeRoomOutput extends CommonOutput {
   @Field((type) => Room, { nullable: true })
   room?: Room;
+}
+
+@InputType()
+export class FetchMessagesInput {
+  @Field((type) => Int)
+  roomId: number;
+
+  @Field((type) => Int, { defaultValue: 0 })
+  cursorId?: number = 0;
+
+  @Field((type) => Int, { nullable: true, defaultValue: 10 })
+  pageSize?: number;
+}
+
+@ObjectType()
+export class FetchMessagesOutput extends CommonOutput {
+  @Field((type) => [Message], { nullable: true })
+  messages?: Message[];
+
+  @Field((type) => Int, { nullable: true })
+  count?: number;
 }

@@ -9,6 +9,7 @@ import {
   SendMessageOutput,
 } from "../../dtos/message.dto";
 import { prismaClient } from "../../prisma";
+import { pubsub } from "../../pubsub";
 
 export class MessageService {
   async seeRooms(authUser: User): Promise<SeeRoomsOutput> {
@@ -23,7 +24,6 @@ export class MessageService {
         },
         include: {
           participants: true,
-          messages: false,
         },
       });
       return {
@@ -114,6 +114,7 @@ export class MessageService {
           },
         },
       });
+      pubsub.publish("SAMPLE", { message });
       return {
         ok: true,
       };
@@ -240,5 +241,19 @@ export class MessageService {
         },
       },
     });
+  }
+
+  async latestMessage(roomId: number): Promise<Message | null> {
+    try {
+      const [message] = await prismaClient.room
+        .findUnique({ where: { id: roomId } })
+        .messages({
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        });
+      return message;
+    } catch {
+      return null;
+    }
   }
 }

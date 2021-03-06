@@ -1,5 +1,6 @@
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
 import * as dotenv from "dotenv";
+import http from "http";
 
 import "reflect-metadata";
 
@@ -15,20 +16,21 @@ import { User } from "@generated/type-graphql";
 import { customAuthChecker } from "./auth/auth.checker";
 import express from "express";
 import logger from "morgan";
-import * as bodyParser from "body-parser";
+
+import { pubsub } from "./pubsub";
 
 dotenv.config({ path: __dirname + "/../.env" });
 
 const PORT: number = Number(process.env.PORT) || 3000;
-
 let schema: GraphQLSchema;
-
 const app = express();
+const httpServer = http.createServer(app);
 
 const main = async () => {
   const { typeDefs, resolvers: appResolvers } = await buildTypeDefsAndResolvers(
     {
       resolvers: [__dirname + "/**/*.resolvers.{ts,js}"],
+      pubSub: pubsub,
       authChecker: customAuthChecker,
     }
   );
@@ -46,8 +48,8 @@ const main = async () => {
     schema: appSchema,
     playground: true,
     // authentication part.
-    context: async ({ req }): Promise<Context> => {
-      const token = req.headers["x-jwt"];
+    context: async ({ req, connection }): Promise<Context> => {
+      const token = req ? req.headers["x-jwt"] : connection?.context["x-jwt"];
       let user: User | null = null;
 
       if (token) {
@@ -83,8 +85,9 @@ const main = async () => {
   app.use(logger("tiny"));
   app.use("/static", express.static("uploads"));
   server.applyMiddleware({ app });
+  server.installSubscriptionHandlers(httpServer);
 
-  app.listen({ port: PORT }, () => {
+  httpServer.listen({ port: PORT }, () => {
     console.log(`🤗 Express server start with PORT ${PORT}`);
   });
 };

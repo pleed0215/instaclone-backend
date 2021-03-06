@@ -59,3 +59,16 @@ prisma는 follower/following relation 만들기가 쉽다.
 include/select의 차이
 
 - include는 select + relations개념.
+
+# pubsub
+
+일단은 그냥 apollo server의 pubsub을 사용토록 하자.
+
+subscription 셋팅은 apollo server 공식홈에서 참고해서 따라하면 된다.
+httpServer를 따로 만들어야 한다. 기존의 express app server를 이용하는 것이 아니라.
+
+## graphql의 subscription은 언제 사용하는가?
+
+- Small, incremental changes to large objects
+  : 큰 오브젝트를 계속해서 fetching하는 건 비효율적임. 거기다가 대부분의 필드가 거의 안 바뀌는 경우에 큰 덩어리를 다시 읽는 것은 매우 비효율적임. 대신에 초반에 초기 데이터만 query하고, 각 필드가 업데이트는 될 때에만 서버가 작동하는 것이.. 효율적.
+- Low, latency, real-time updates. 짧은 지연시간. 실시간 업데이트. 채팅.

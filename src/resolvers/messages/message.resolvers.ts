@@ -7,6 +7,7 @@ import {
   Query,
   Resolver,
   Root,
+  Subscription,
 } from "type-graphql";
 import { Room, Message, User } from "@generated/type-graphql";
 import {
@@ -20,6 +21,7 @@ import {
 } from "../../dtos/message.dto";
 import { MessageService } from "./message.service";
 import { AuthUser } from "../../auth/auth.decorator";
+import { pubsub } from "../../pubsub";
 
 @Resolver((of) => Room)
 export class RoomResolver {
@@ -53,6 +55,22 @@ export class RoomResolver {
   @Authorized()
   numUnread(@AuthUser() authUser: User, @Root() room: Room): Promise<number> {
     return this.messageService.numUnread(room.id, authUser.id);
+  }
+
+  @FieldResolver((returns) => Message, { nullable: true })
+  @Authorized()
+  latestMessage(@Root() room: Room): Promise<Message | null> {
+    return this.messageService.latestMessage(room.id);
+  }
+
+  @Subscription((returns) => String, {
+    topics: "SAMPLE",
+    filter: ({ payload, args, context, info }) => {
+      return payload.message.roomId === args.id;
+    },
+  })
+  subTest(@Arg("id", (types) => Int) roomId): string {
+    return "TESTED";
   }
 }
 

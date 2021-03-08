@@ -10,6 +10,7 @@ import {
 } from "../../dtos/message.dto";
 import { prismaClient } from "../../prisma";
 import { pubsub } from "../../pubsub";
+import { PUBSUB_NEW_MESSAGE } from "./message.constant";
 
 export class MessageService {
   async seeRooms(authUser: User): Promise<SeeRoomsOutput> {
@@ -114,7 +115,7 @@ export class MessageService {
           },
         },
       });
-      pubsub.publish("SAMPLE", { message });
+      pubsub.publish(PUBSUB_NEW_MESSAGE, { message });
       return {
         ok: true,
       };

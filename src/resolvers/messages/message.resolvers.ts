@@ -21,7 +21,7 @@ import {
 } from "../../dtos/message.dto";
 import { MessageService } from "./message.service";
 import { AuthUser } from "../../auth/auth.decorator";
-import { pubsub } from "../../pubsub";
+import { PUBSUB_NEW_MESSAGE } from "./message.constant";
 
 @Resolver((of) => Room)
 export class RoomResolver {
@@ -63,14 +63,22 @@ export class RoomResolver {
     return this.messageService.latestMessage(room.id);
   }
 
-  @Subscription((returns) => String, {
-    topics: "SAMPLE",
-    filter: ({ payload, args, context, info }) => {
-      return payload.message.roomId === args.id;
-    },
+  @Subscription((returns) => Message, {
+    topics: PUBSUB_NEW_MESSAGE,
+    filter: ({ payload, args, context }) =>
+      payload.message.roomId === args.roomId,
+    nullable: true,
   })
-  subTest(@Arg("id", (types) => Int) roomId): string {
-    return "TESTED";
+  @Authorized()
+  waitNewMessage(
+    @Root() payload,
+    @Arg("roomId", (types) => Int) roomId
+  ): Message | null {
+    if (payload.message) {
+      return payload.message;
+    } else {
+      return null;
+    }
   }
 }
 

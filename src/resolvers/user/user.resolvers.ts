@@ -38,6 +38,13 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {
     this.userService = new UserService();
   }
+
+  @Query((returns) => User)
+  @Authorized()
+  seeMe(@AuthUser() authUser: User) {
+    return authUser;
+  }
+
   @Query((returns) => SeeprofileOutput)
   seeProfile(@Arg("input") input: SeeProfileInput): Promise<SeeprofileOutput> {
     return this.userService.seeProfile(input);

@@ -16,6 +16,7 @@ import { User } from "@generated/type-graphql";
 import { customAuthChecker } from "./auth/auth.checker";
 import express from "express";
 import logger from "morgan";
+import cors from "cors";
 
 import { pubsub } from "./pubsub";
 
@@ -84,6 +85,7 @@ const main = async () => {
 
   app.use(logger("tiny"));
   app.use("/static", express.static("uploads"));
+  app.use(cors());
   server.applyMiddleware({ app });
   server.installSubscriptionHandlers(httpServer);
 

@@ -66,6 +66,7 @@ const main = async () => {
                 lastName: true,
                 username: true,
                 email: true,
+                avatar: true,
               },
             });
           }

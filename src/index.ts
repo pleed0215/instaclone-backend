@@ -52,7 +52,7 @@ const main = async () => {
     context: async ({ req, connection }): Promise<Context> => {
       const token = req ? req.headers["x-jwt"] : connection?.context["x-jwt"];
       let user: User | null = null;
-
+      //?
       if (token) {
         try {
           const decoded = jwt.verify(token.toString(), SECRET_KEY);

@@ -575,4 +575,15 @@ export class PhotoService {
       },
     });
   }
+
+  async isLiked(photoId: number, userId: number): Promise<boolean> {
+    return Boolean(
+      await prismaClient.like.findFirst({
+        where: {
+          photoId,
+          userId,
+        },
+      })
+    );
+  }
 }

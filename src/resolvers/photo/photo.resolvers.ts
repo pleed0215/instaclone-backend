@@ -129,6 +129,12 @@ export class PhotoResolvers {
   ): Promise<DeletePhotoOutput> {
     return this.photoService.deletePhoto(authUser, input);
   }
+
+  @FieldResolver((returns) => Boolean)
+  @Authorized()
+  isLiked(@Root() photo: Photo, @AuthUser() authUser: User): Promise<boolean> {
+    return this.photoService.isLiked(photo.id, authUser.id);
+  }
 }
 
 @Resolver((of) => HashTag)

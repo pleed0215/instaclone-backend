@@ -132,4 +132,10 @@ export class UserResolver {
   searchUser(@Arg("input") input: SearchUserInput): Promise<SearchUserOutput> {
     return this.userService.searchUser(input);
   }
+
+  @FieldResolver((type) => Int)
+  @Authorized()
+  numPhotos(@Root() user: User): Promise<number> {
+    return this.userService.numPhotos(user.id);
+  }
 }

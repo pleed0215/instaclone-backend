@@ -501,4 +501,12 @@ export class UserService {
       };
     }
   }
+
+  async numPhotos(userId: number): Promise<number> {
+    return await prismaClient.photo.count({
+      where: {
+        userId,
+      },
+    });
+  }
 }

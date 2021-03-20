@@ -425,7 +425,7 @@ export class UserService {
           username,
           following: {
             some: {
-              username,
+              username: authUser.username,
             },
           },
         },

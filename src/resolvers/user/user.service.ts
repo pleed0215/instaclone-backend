@@ -410,26 +410,23 @@ export class UserService {
       /*const followingsWithName = await prismaClient.user
         .findUnique({
           where: {
-            username: authUser.username,
-          },
-        })
-        .following({
-          where: {
             username,
           },
-        });
+        })
+        .followers({});
 
-      return followingsWithName.length !== 0;*/
+      //return followingsWithName.length !== 0;*/
       const exist = await prismaClient.user.count({
         where: {
           username,
-          following: {
+          followers: {
             some: {
               username: authUser.username,
             },
           },
         },
       });
+
       return Boolean(exist);
     } catch (e) {
       throw new Error(e.message);
@@ -444,7 +441,7 @@ export class UserService {
             username: authUser.username,
           },
         })
-        .followers({
+        .following({
           where: {
             username,
           },

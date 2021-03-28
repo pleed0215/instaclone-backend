@@ -72,6 +72,7 @@ export class PhotoService {
         if (photo) {
           return {
             ok: true,
+            photo,
           };
         } else {
           throw new Error("Creating a Photo failed");

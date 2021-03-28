@@ -18,7 +18,10 @@ export class UploadPhotoInput {
 }
 
 @ObjectType()
-export class UploadPhotoOutput extends CommonOutput {}
+export class UploadPhotoOutput extends CommonOutput {
+  @Field((type) => Photo, { nullable: true })
+  photo?: Photo;
+}
 
 @InputType()
 export class SeePhotoDetailInput {

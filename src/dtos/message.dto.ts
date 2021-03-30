@@ -21,7 +21,10 @@ export class SendMessageInput {
 }
 
 @ObjectType()
-export class SendMessageOutput extends CommonOutput {}
+export class SendMessageOutput extends CommonOutput {
+  @Field((type) => Message, { nullable: true })
+  message?: Message;
+}
 
 @InputType()
 export class SeeRoomInput {

@@ -118,6 +118,7 @@ export class MessageService {
       pubsub.publish(PUBSUB_NEW_MESSAGE, { message });
       return {
         ok: true,
+        message,
       };
     } catch (e) {
       return {

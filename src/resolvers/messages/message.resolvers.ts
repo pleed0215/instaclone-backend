@@ -44,7 +44,7 @@ export class RoomResolver {
     return this.messageService.seeRoom(authUser, input);
   }
 
-  @Mutation((returns) => FetchMessagesOutput)
+  @Query((returns) => FetchMessagesOutput)
   fetchAndReadMessages(
     @Arg("input") input: FetchMessagesInput
   ): Promise<FetchMessagesOutput> {

@@ -47,6 +47,7 @@ const main = async () => {
 
   const server = new ApolloServer({
     schema: appSchema,
+    introspection: process.env.NODE_ENV === "production",
     playground: true,
     // authentication part.
     context: async ({ req, connection }): Promise<Context> => {

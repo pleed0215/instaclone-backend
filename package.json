@@ -7,7 +7,6 @@
     "preinstall": "npx npm-force-resolutions",
     "postinstall": "npx prisma generate",
     "predev": "tsc",
-    "prebuild": "prisma migrate deploy --preview-feature",
     "build": "tsc -p .",
     "start:prod": "node dist/index.js",
     "dev": "cross-env NODE_ENV=debug tsc-watch --onSuccess \"node dist/index.js\"",

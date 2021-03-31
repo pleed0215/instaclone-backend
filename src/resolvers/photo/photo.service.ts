@@ -23,7 +23,7 @@ import {
   DeletePhotoOutput,
 } from "../../dtos/photo.dto";
 import { prismaClient } from "../../prisma";
-import { User, HashTag } from "@generated/type-graphql";
+import { User, HashTag } from "../../generated";
 
 export class PhotoService {
   parseHashTag(toParse: string): string[] {

@@ -6,7 +6,7 @@ import {
   CommonPaginatedOutput,
 } from "./common.dto";
 import { FileUpload } from "./file.upload";
-import { Photo, User, HashTag } from "@generated/type-graphql";
+import { Photo, User, HashTag } from "../generated";
 
 @InputType()
 export class UploadPhotoInput {

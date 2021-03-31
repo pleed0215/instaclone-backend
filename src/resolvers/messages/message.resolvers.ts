@@ -9,7 +9,7 @@ import {
   Root,
   Subscription,
 } from "type-graphql";
-import { Room, Message, User } from "@generated/type-graphql";
+import { Room, Message, User } from "../../generated";
 import {
   FetchMessagesInput,
   FetchMessagesOutput,

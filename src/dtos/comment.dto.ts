@@ -4,7 +4,7 @@ import {
   CommonPaginatedInput,
   CommonPaginatedOutput,
 } from "./common.dto";
-import { Comment } from "@generated/type-graphql";
+import { Comment } from "../generated";
 
 @InputType()
 export class AddCommentInput {

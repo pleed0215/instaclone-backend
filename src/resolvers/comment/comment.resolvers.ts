@@ -19,7 +19,7 @@ import {
   SeeCommentsOutput,
 } from "../../dtos/comment.dto";
 import { CommentService } from "./comment.service";
-import { User, Comment } from "@generated/type-graphql";
+import { User, Comment } from "../../generated";
 
 @Resolver((of) => Comment)
 export class CommentResolver {

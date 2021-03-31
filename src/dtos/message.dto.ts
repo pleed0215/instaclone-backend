@@ -1,6 +1,6 @@
 import { Field, InputType, Int, ObjectType } from "type-graphql";
 import { CommonOutput } from "./common.dto";
-import { Room, Message } from "@generated/type-graphql";
+import { Room, Message } from "../generated";
 
 @ObjectType()
 export class SeeRoomsOutput extends CommonOutput {

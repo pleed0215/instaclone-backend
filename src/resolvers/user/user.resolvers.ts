@@ -9,8 +9,8 @@ import {
   ResolverInterface,
   Root,
 } from "type-graphql";
-import { User } from "@generated/type-graphql";
-import { prismaClient } from "../../prisma";
+import { User } from "../../generated";
+
 import {
   CreateAccountInput,
   CreateAccountOutput,

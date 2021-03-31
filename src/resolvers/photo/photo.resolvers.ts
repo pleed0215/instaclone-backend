@@ -8,7 +8,7 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { User, Photo, HashTag } from "@generated/type-graphql";
+import { User, Photo, HashTag } from "../../generated";
 import { PhotoService } from "./photo.service";
 import {
   DeletePhotoInput,

@@ -21,7 +21,7 @@ import { SECRET_KEY } from "../../utils";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import { uploadFile } from "../../aws/s3";
-import { User } from "@generated/type-graphql";
+import { User } from "../../generated";
 
 export class UserService {
   async seeProfile(input: SeeProfileInput): Promise<SeeprofileOutput> {

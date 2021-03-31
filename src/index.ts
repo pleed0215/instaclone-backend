@@ -4,7 +4,7 @@ import http from "http";
 
 import "reflect-metadata";
 
-import { resolvers } from "@generated/type-graphql";
+import { resolvers } from "./generated";
 import { buildSchema, buildTypeDefsAndResolvers } from "type-graphql";
 import { Context } from "vm";
 import { GraphQLSchema } from "graphql";
@@ -12,7 +12,7 @@ import { prismaClient } from "./prisma";
 import { stitchSchemas } from "graphql-tools";
 import * as jwt from "jsonwebtoken";
 import { SECRET_KEY } from "./utils";
-import { User } from "@generated/type-graphql";
+import { User } from "./generated";
 import { customAuthChecker } from "./auth/auth.checker";
 import express from "express";
 import logger from "morgan";

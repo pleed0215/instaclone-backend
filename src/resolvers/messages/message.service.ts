@@ -1,4 +1,4 @@
-import { User, Room, Message } from "@generated/type-graphql";
+import { User, Room, Message } from "../../generated";
 import {
   FetchMessagesInput,
   FetchMessagesOutput,

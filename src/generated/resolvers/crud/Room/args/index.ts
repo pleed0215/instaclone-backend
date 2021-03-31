@@ -1,0 +1,10 @@
+export { AggregateRoomArgs } from "./AggregateRoomArgs";
+export { CreateRoomArgs } from "./CreateRoomArgs";
+export { DeleteManyRoomArgs } from "./DeleteManyRoomArgs";
+export { DeleteRoomArgs } from "./DeleteRoomArgs";
+export { FindFirstRoomArgs } from "./FindFirstRoomArgs";
+export { FindManyRoomArgs } from "./FindManyRoomArgs";
+export { FindUniqueRoomArgs } from "./FindUniqueRoomArgs";
+export { UpdateManyRoomArgs } from "./UpdateManyRoomArgs";
+export { UpdateRoomArgs } from "./UpdateRoomArgs";
+export { UpsertRoomArgs } from "./UpsertRoomArgs";

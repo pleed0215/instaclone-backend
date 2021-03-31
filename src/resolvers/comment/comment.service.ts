@@ -1,4 +1,3 @@
-import { User } from "@generated/type-graphql";
 import {
   AddCommentInput,
   AddCommentOutput,
@@ -10,7 +9,7 @@ import {
   SeeCommentsOutput,
 } from "../../dtos/comment.dto";
 import { prismaClient } from "../../prisma";
-import { Comment } from "@generated/type-graphql";
+import { Comment, User } from "../../generated";
 
 export class CommentService {
   async addComment(

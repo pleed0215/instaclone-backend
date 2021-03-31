@@ -5,7 +5,7 @@ import {
   CommonPaginatedInput,
   CommonPaginatedOutput,
 } from "./common.dto";
-import { User } from "@generated/type-graphql";
+import { User } from "../generated";
 import { GraphQLUpload } from "graphql-tools";
 import { FileUpload } from "./file.upload";
 

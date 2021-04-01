@@ -455,19 +455,10 @@ export class UserService {
 
   async searchUser({
     keyword,
-    page,
-    pageSize,
-  }: SearchUserInput): Promise<SearchUserOutput> {
+    offset,
+    limit,
+  }: SearchUserInput): Promise<User[]> {
     try {
-      const totalCount = await prismaClient.user.count({
-        where: {
-          username: {
-            contains: keyword,
-            mode: "insensitive",
-          },
-        },
-      });
-      const totalPage = Math.ceil(totalCount / pageSize);
       const results = await prismaClient.user.findMany({
         where: {
           username: {
@@ -475,27 +466,13 @@ export class UserService {
             mode: "insensitive",
           },
         },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip: offset,
+        take: limit,
       });
 
-      const currentCount = results.length;
-      const currentPage = page;
-
-      return {
-        ok: true,
-        totalCount,
-        totalPage,
-        currentPage,
-        currentCount,
-        pageSize,
-        results,
-      };
+      return results;
     } catch (e) {
-      return {
-        ok: false,
-        error: e.message,
-      };
+      throw new Error(e);
     }
   }
 

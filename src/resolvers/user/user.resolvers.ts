@@ -129,7 +129,7 @@ export class UserResolver {
 
   @Query((type) => SearchUserOutput)
   @Authorized()
-  searchUser(@Arg("input") input: SearchUserInput): Promise<SearchUserOutput> {
+  searchUser(@Arg("input") input: SearchUserInput): Promise<User[]> {
     return this.userService.searchUser(input);
   }
 

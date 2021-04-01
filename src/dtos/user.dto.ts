@@ -157,13 +157,19 @@ export class SeeFollowingsOutput extends CommonPaginatedOutput {
 }
 
 @InputType()
-export class SearchUserInput extends CommonPaginatedInput {
+export class SearchUserInput {
+  @Field((type) => Int, { nullable: true, defaultValue: 0 })
+  offset?: number;
+
+  @Field((type) => Int, { nullable: true, defaultValue: 10 })
+  limit?: number;
+
   @Field((type) => String)
   keyword: string;
 }
 
 @ObjectType()
-export class SearchUserOutput extends CommonPaginatedOutput {
+export class SearchUserOutput {
   @Field((type) => [User], { nullable: true })
   results?: User[];
 }

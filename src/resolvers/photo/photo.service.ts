@@ -3,7 +3,6 @@ import {
   SearchPhotoInput,
   SearchPhotoOutput,
   SeeHashTagInput,
-  SeeHashTagOutput,
   SeeHashTagPhotoOutput,
   SeeLikeUsersInput,
   SeeLikeUsersOutput,
@@ -21,6 +20,7 @@ import {
   SeeFeedsOutput,
   DeletePhotoInput,
   DeletePhotoOutput,
+  SeeHashTagPhotoInput,
 } from "../../dtos/photo.dto";
 import { prismaClient } from "../../prisma";
 import { User, HashTag } from "../../generated";
@@ -116,27 +116,21 @@ export class PhotoService {
     }
   }
 
-  async seeHashTag({
+  async searchHashTags({
     hashtag: hashtagInput,
-  }: SeeHashTagInput): Promise<SeeHashTagOutput> {
+  }: SeeHashTagInput): Promise<HashTag[]> {
     try {
-      const hashtag = await prismaClient.hashTag.findUnique({
-        where: { hashtag: hashtagInput },
+      const hashtags = await prismaClient.hashTag.findMany({
+        where: {
+          hashtag: {
+            contains: hashtagInput,
+            mode: "insensitive",
+          },
+        },
       });
-      if (hashtag) {
-        return {
-          ok: true,
-
-          hashtag,
-        };
-      } else {
-        throw new Error(`There is no hash tag contains: ${hashtagInput}`);
-      }
+      return hashtags;
     } catch (e) {
-      return {
-        ok: false,
-        error: e.message,
-      };
+      throw new Error(e);
     }
   }
 
@@ -152,34 +146,36 @@ export class PhotoService {
     });
   }
 
-  async photos(
-    hashtag: HashTag,
-    page,
-    pageSize
-  ): Promise<SeeHashTagPhotoOutput> {
+  async photos({
+    hashtag,
+    offset,
+    limit,
+  }: SeeHashTagPhotoInput): Promise<SeeHashTagPhotoOutput> {
     try {
-      const totalCount = await this.totalPhotos(hashtag);
-      const totalPage = Math.ceil(totalCount / pageSize);
+      const totalCount = await prismaClient.photo.count({
+        where: {
+          hashtags: {
+            some: {
+              hashtag,
+            },
+          },
+        },
+      });
+
       const photos = await prismaClient.photo.findMany({
         where: {
           hashtags: {
             some: {
-              id: hashtag.id,
+              hashtag,
             },
           },
         },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip: offset,
+        take: limit,
       });
-      const currentCount = photos.length;
-      const currentPage = page;
 
       return {
         totalCount,
-        totalPage,
-        currentPage,
-        currentCount,
-        pageSize,
         photos,
       };
     } catch {
@@ -189,8 +185,8 @@ export class PhotoService {
 
   async searchPhotos({
     keyword,
-    page,
-    pageSize,
+    offset,
+    limit,
   }: SearchPhotoInput): Promise<SearchPhotoOutput> {
     try {
       const totalCount = await prismaClient.photo.count({
@@ -201,7 +197,7 @@ export class PhotoService {
           },
         },
       });
-      const totalPage = Math.ceil(totalCount / pageSize);
+
       const photos = await prismaClient.photo.findMany({
         where: {
           caption: {
@@ -209,26 +205,16 @@ export class PhotoService {
             mode: "insensitive",
           },
         },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip: offset,
+        take: limit,
       });
-      const currentCount = photos.length;
-      const currentPage = page;
 
       return {
-        ok: true,
-        totalPage,
         totalCount,
-        currentCount,
-        currentPage,
-        pageSize,
         photos,
       };
     } catch (e) {
-      return {
-        ok: false,
-        error: e.message,
-      };
+      throw new Error(e);
     }
   }
 

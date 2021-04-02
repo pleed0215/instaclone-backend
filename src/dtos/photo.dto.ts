@@ -41,40 +41,46 @@ export class SeeHashTagInput {
   hashtag: string;
 }
 
-@ObjectType()
-export class SeeHashTagOutput extends CommonOutput {
-  @Field((type) => HashTag, { nullable: true })
-  hashtag?: HashTag;
+@InputType()
+export class SeeHashTagPhotoInput {
+  @Field((type) => String)
+  hashtag: string;
+
+  @Field((type) => Int, { nullable: true, defaultValue: 0 })
+  offset?: number;
+
+  @Field((type) => Int, { nullable: true, defaultValue: 10 })
+  limit?: number;
 }
 
 @ObjectType()
 export class SeeHashTagPhotoOutput {
-  @Field((type) => Int, { nullable: true })
-  currentPage?: number;
-  @Field((type) => Int, { nullable: true })
-  currentCount?: number;
-
-  @Field((type) => Int, { nullable: true })
-  totalPage?: number;
-  @Field((type) => Int, { nullable: true })
-  totalCount?: number;
-
-  @Field((type) => Int, { nullable: true })
-  pageSize?: number;
   @Field((type) => [Photo], { nullable: true })
   photos?: Photo[];
+
+  @Field((type) => Int, { nullable: true })
+  totalCount?: number;
 }
 
 @InputType()
-export class SearchPhotoInput extends CommonPaginatedInput {
+export class SearchPhotoInput {
   @Field((type) => String)
   keyword: string;
+
+  @Field((type) => Int, { nullable: true, defaultValue: 0 })
+  offset?: number;
+
+  @Field((type) => Int, { nullable: true, defaultValue: 10 })
+  limit?: number;
 }
 
 @ObjectType()
-export class SearchPhotoOutput extends CommonPaginatedOutput {
-  @Field((type) => [Photo])
+export class SearchPhotoOutput {
+  @Field((type) => [Photo], { nullable: true })
   photos?: Photo[];
+
+  @Field((type) => Int, { nullable: true })
+  totalCount?: number;
 }
 
 @InputType()

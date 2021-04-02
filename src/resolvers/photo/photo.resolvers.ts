@@ -18,7 +18,7 @@ import {
   SeeFeedsInput,
   SeeFeedsOutput,
   SeeHashTagInput,
-  SeeHashTagOutput,
+  SeeHashTagPhotoInput,
   SeeHashTagPhotoOutput,
   SeeLikePhotosInput,
   SeeLikePhotosOutput,
@@ -142,18 +142,16 @@ export class HashTagResolvers {
   constructor(private readonly photoService: PhotoService) {
     this.photoService = new PhotoService();
   }
-  @Query((types) => SeeHashTagOutput)
-  seeHashtag(@Arg("input") input: SeeHashTagInput): Promise<SeeHashTagOutput> {
-    return this.photoService.seeHashTag(input);
+  @Query((types) => [HashTag])
+  searchHashtags(@Arg("input") input: SeeHashTagInput): Promise<HashTag[]> {
+    return this.photoService.searchHashTags(input);
   }
 
-  @FieldResolver((types) => SeeHashTagPhotoOutput)
-  photosOn(
-    @Root() hashtag,
-    @Arg("page", (types) => Int) page = 1,
-    @Arg("pageSize", (types) => Int) pageSize = 10
+  @Query((types) => SeeHashTagPhotoOutput)
+  seeHashtagPhotos(
+    @Arg("input") input: SeeHashTagPhotoInput
   ): Promise<SeeHashTagPhotoOutput> {
-    return this.photoService.photos(hashtag, page, pageSize);
+    return this.photoService.photos(input);
   }
 
   @FieldResolver((types) => Int)

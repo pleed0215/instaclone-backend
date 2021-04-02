@@ -24,18 +24,9 @@ import {
 } from "../../dtos/photo.dto";
 import { prismaClient } from "../../prisma";
 import { User, HashTag } from "../../generated";
+import { parseHashTag } from "../../utils";
 
 export class PhotoService {
-  parseHashTag(toParse: string): string[] {
-    const hashTagRegex = /#[\w]+/gi;
-    const results: string[] = [];
-    const replaceFunction = (match: string) => {
-      results.push(match.trim().toLowerCase());
-      return match;
-    };
-    toParse.replace(hashTagRegex, replaceFunction);
-    return results;
-  }
   async uploadPhoto(
     authUser: User,
     { file, caption }: UploadPhotoInput
@@ -44,7 +35,7 @@ export class PhotoService {
       const uploadResult = await uploadFile(await file);
       let hashtags: string[] = [];
       if (caption) {
-        hashtags = [...this.parseHashTag(caption)];
+        hashtags = [...parseHashTag(caption)];
       }
 
       if (uploadResult.ok && uploadResult.url) {
@@ -246,7 +237,7 @@ export class PhotoService {
         }
 
         if (caption) {
-          hashtags = [...this.parseHashTag(caption)];
+          hashtags = [...parseHashTag(caption)];
         }
 
         await prismaClient.photo.update({

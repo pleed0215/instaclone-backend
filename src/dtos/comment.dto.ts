@@ -16,7 +16,10 @@ export class AddCommentInput {
 }
 
 @ObjectType()
-export class AddCommentOutput extends CommonOutput {}
+export class AddCommentOutput extends CommonOutput {
+  @Field((type) => Comment, { nullable: true })
+  comment?: Comment;
+}
 
 @InputType()
 export class EditCommentInput {

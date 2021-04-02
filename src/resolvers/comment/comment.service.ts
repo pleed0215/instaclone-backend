@@ -35,6 +35,7 @@ export class CommentService {
       if (newComment) {
         return {
           ok: true,
+          comment: newComment,
         };
       } else {
         throw new Error("Failed to add comment");

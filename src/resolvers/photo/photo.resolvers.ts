@@ -57,10 +57,8 @@ export class PhotoResolvers {
     return this.photoService.seePhotoDetail(input);
   }
 
-  @Query((returns) => SearchPhotoOutput)
-  searchPhotos(
-    @Arg("input") input: SearchPhotoInput
-  ): Promise<SearchPhotoOutput> {
+  @Query((returns) => [Photo])
+  searchPhotos(@Arg("input") input: SearchPhotoInput): Promise<Photo[]> {
     return this.photoService.searchPhotos(input);
   }
 

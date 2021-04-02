@@ -127,7 +127,7 @@ export class UserResolver {
     return this.userService.isFollower(authUser, user.username);
   }
 
-  @Query((type) => SearchUserOutput)
+  @Query((type) => [User])
   @Authorized()
   searchUser(@Arg("input") input: SearchUserInput): Promise<User[]> {
     return this.userService.searchUser(input);

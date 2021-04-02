@@ -23,7 +23,7 @@ import {
   SeeHashTagPhotoInput,
 } from "../../dtos/photo.dto";
 import { prismaClient } from "../../prisma";
-import { User, HashTag } from "../../generated";
+import { User, HashTag, Photo } from "../../generated";
 import { parseHashTag } from "../../utils";
 
 export class PhotoService {
@@ -178,7 +178,7 @@ export class PhotoService {
     keyword,
     offset,
     limit,
-  }: SearchPhotoInput): Promise<SearchPhotoOutput> {
+  }: SearchPhotoInput): Promise<Photo[]> {
     try {
       const totalCount = await prismaClient.photo.count({
         where: {
@@ -200,10 +200,7 @@ export class PhotoService {
         take: limit,
       });
 
-      return {
-        totalCount,
-        photos,
-      };
+      return photos;
     } catch (e) {
       throw new Error(e);
     }

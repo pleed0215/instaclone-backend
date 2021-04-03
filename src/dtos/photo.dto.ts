@@ -135,12 +135,11 @@ export class SeeLikePhotosOutput extends CommonPaginatedOutput {
 }
 
 @InputType()
-export class SeeFeedsInput extends CommonPaginatedInput {}
-
-@ObjectType()
-export class SeeFeedsOutput extends CommonPaginatedOutput {
-  @Field((type) => [Photo], { nullable: true })
-  feeds?: Photo[];
+export class SeeFeedsInput {
+  @Field((type) => Int, { nullable: true, defaultValue: 0 })
+  offset?: number;
+  @Field((type) => Int, { nullable: true, defaultValue: 10 })
+  limit?: number;
 }
 
 @InputType()

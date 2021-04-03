@@ -17,7 +17,6 @@ import {
   UploadPhotoInput,
   UploadPhotoOutput,
   SeeFeedsInput,
-  SeeFeedsOutput,
   DeletePhotoInput,
   DeletePhotoOutput,
   SeeHashTagPhotoInput,
@@ -474,34 +473,15 @@ export class PhotoService {
 
   async seeFeeds(
     authUser: User,
-    { page, pageSize }: SeeFeedsInput
-  ): Promise<SeeFeedsOutput> {
+    { offset = 0, limit = 10 }: SeeFeedsInput
+  ): Promise<Photo[]> {
     try {
-      const totalCount = await prismaClient.photo.count({
-        where: {
-          OR: [
-            {
-              user: {
-                following: {
-                  some: {
-                    id: authUser.id,
-                  },
-                },
-              },
-            },
-            {
-              userId: authUser.id,
-            },
-          ],
-        },
-      });
-      const totalPage = Math.ceil(totalCount / pageSize);
       const feeds = await prismaClient.photo.findMany({
         where: {
           OR: [
             {
               user: {
-                following: {
+                followers: {
                   some: {
                     id: authUser.id,
                   },
@@ -518,28 +498,16 @@ export class PhotoService {
           hashtags: true,
           likes: true,
         },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip: offset,
+        take: limit,
         orderBy: {
           createdAt: "desc",
         },
       });
-      const currentCount = feeds.length;
-      const currentPage = page;
-      return {
-        ok: true,
-        totalPage,
-        totalCount,
-        currentCount,
-        currentPage,
-        pageSize,
-        feeds,
-      };
+
+      return feeds;
     } catch (e) {
-      return {
-        ok: false,
-        error: e.message,
-      };
+      throw new Error(e);
     }
   }
 

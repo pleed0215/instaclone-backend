@@ -16,7 +16,6 @@ import {
   SearchPhotoInput,
   SearchPhotoOutput,
   SeeFeedsInput,
-  SeeFeedsOutput,
   SeeHashTagInput,
   SeeHashTagPhotoInput,
   SeeHashTagPhotoOutput,
@@ -99,12 +98,12 @@ export class PhotoResolvers {
     return this.photoService.seeLikePhotos(input);
   }
 
-  @Query((returns) => SeeFeedsOutput)
+  @Query((returns) => [Photo])
   @Authorized()
   seeFeeds(
     @AuthUser() authUser,
     @Arg("input") input: SeeFeedsInput
-  ): Promise<SeeFeedsOutput> {
+  ): Promise<Photo[]> {
     return this.photoService.seeFeeds(authUser, input);
   }
 

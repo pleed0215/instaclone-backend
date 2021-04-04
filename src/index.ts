@@ -47,7 +47,6 @@ const main = async () => {
 
   const server = new ApolloServer({
     schema: appSchema,
-
     introspection: true,
     playground: true,
     // authentication part.

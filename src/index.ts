@@ -30,7 +30,7 @@ const httpServer = http.createServer(app);
 const main = async () => {
   const { typeDefs, resolvers: appResolvers } = await buildTypeDefsAndResolvers(
     {
-      resolvers: [__dirname + "/src/resolvers/**/*.resolvers.{ts,js}"],
+      resolvers: [__dirname + "/**/*.resolvers.{ts,js}"],
       pubSub: pubsub,
       authChecker: customAuthChecker,
     }

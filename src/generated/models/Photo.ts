@@ -33,6 +33,7 @@ export class Photo {
   })
   caption?: string | null;
 
+  /** @onDelete(SET_NULL) */
   hashtags?: HashTag[];
 
   @TypeGraphQL.Field(_type => Date, {
@@ -45,7 +46,9 @@ export class Photo {
   })
   updatedAt!: Date;
 
+  /** @onDelete(CASCADE) */
   likes?: Like[];
 
+  /** @onDelete(CASCADE) */
   comments?: Comment[];
 }

@@ -9,7 +9,8 @@ import { transformFields, getPrismaFromContext } from "../../../helpers";
 @TypeGraphQL.Resolver(_of => Room)
 export class RoomRelationsResolver {
   @TypeGraphQL.FieldResolver(_type => [User], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(SET_NULL)"
   })
   async participants(@TypeGraphQL.Root() room: Room, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: RoomParticipantsArgs): Promise<User[]> {
     return getPrismaFromContext(ctx).room.findUnique({
@@ -20,7 +21,8 @@ export class RoomRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [Message], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(SET_NULL)"
   })
   async messages(@TypeGraphQL.Root() room: Room, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: RoomMessagesArgs): Promise<Message[]> {
     return getPrismaFromContext(ctx).room.findUnique({

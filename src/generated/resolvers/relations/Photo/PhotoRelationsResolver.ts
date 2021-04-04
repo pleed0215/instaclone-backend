@@ -23,7 +23,8 @@ export class PhotoRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [HashTag], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(SET_NULL)"
   })
   async hashtags(@TypeGraphQL.Root() photo: Photo, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: PhotoHashtagsArgs): Promise<HashTag[]> {
     return getPrismaFromContext(ctx).photo.findUnique({
@@ -34,7 +35,8 @@ export class PhotoRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [Like], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(CASCADE)"
   })
   async likes(@TypeGraphQL.Root() photo: Photo, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: PhotoLikesArgs): Promise<Like[]> {
     return getPrismaFromContext(ctx).photo.findUnique({
@@ -45,7 +47,8 @@ export class PhotoRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [Comment], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(CASCADE)"
   })
   async comments(@TypeGraphQL.Root() photo: Photo, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: PhotoCommentsArgs): Promise<Comment[]> {
     return getPrismaFromContext(ctx).photo.findUnique({

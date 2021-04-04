@@ -18,6 +18,7 @@ export class HashTag {
   })
   hashtag!: string;
 
+  /** @onDelete(SET_NULL) */
   photos?: Photo[];
 
   @TypeGraphQL.Field(_type => Date, {

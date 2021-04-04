@@ -24,7 +24,9 @@ export class Room {
   })
   updatedAt!: Date;
 
+  /** @onDelete(SET_NULL) */
   participants?: User[];
 
+  /** @onDelete(SET_NULL) */
   messages?: Message[];
 }

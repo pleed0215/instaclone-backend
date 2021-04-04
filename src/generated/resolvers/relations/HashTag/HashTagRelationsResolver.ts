@@ -7,7 +7,8 @@ import { transformFields, getPrismaFromContext } from "../../../helpers";
 @TypeGraphQL.Resolver(_of => HashTag)
 export class HashTagRelationsResolver {
   @TypeGraphQL.FieldResolver(_type => [Photo], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(SET_NULL)"
   })
   async photos(@TypeGraphQL.Root() hashTag: HashTag, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: HashTagPhotosArgs): Promise<Photo[]> {
     return getPrismaFromContext(ctx).hashTag.findUnique({

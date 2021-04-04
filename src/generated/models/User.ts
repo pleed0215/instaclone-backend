@@ -52,18 +52,25 @@ export class User {
   })
   avatar?: string | null;
 
+  /** @onDelete(SET_NULL) */
   followers?: User[];
 
+  /** @onDelete(SET_NULL) */
   following?: User[];
 
+  /** @onDelete(CASCADE) */
   photos?: Photo[];
 
+  /** @onDelete(CASCADE) */
   likes?: Like[];
 
+  /** @onDelete(CASCADE) */
   comments?: Comment[];
 
+  /** @onDelete(SET_NULL) */
   rooms?: Room[];
 
+  /** @onDelete(CASCADE) */
   messages?: Message[];
 
   @TypeGraphQL.Field(_type => Date, {

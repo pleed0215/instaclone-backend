@@ -17,7 +17,8 @@ import { transformFields, getPrismaFromContext } from "../../../helpers";
 @TypeGraphQL.Resolver(_of => User)
 export class UserRelationsResolver {
   @TypeGraphQL.FieldResolver(_type => [User], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(SET_NULL)"
   })
   async followers(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserFollowersArgs): Promise<User[]> {
     return getPrismaFromContext(ctx).user.findUnique({
@@ -28,7 +29,8 @@ export class UserRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [User], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(SET_NULL)"
   })
   async following(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserFollowingArgs): Promise<User[]> {
     return getPrismaFromContext(ctx).user.findUnique({
@@ -39,7 +41,8 @@ export class UserRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [Photo], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(CASCADE)"
   })
   async photos(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserPhotosArgs): Promise<Photo[]> {
     return getPrismaFromContext(ctx).user.findUnique({
@@ -50,7 +53,8 @@ export class UserRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [Like], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(CASCADE)"
   })
   async likes(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserLikesArgs): Promise<Like[]> {
     return getPrismaFromContext(ctx).user.findUnique({
@@ -61,7 +65,8 @@ export class UserRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [Comment], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(CASCADE)"
   })
   async comments(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserCommentsArgs): Promise<Comment[]> {
     return getPrismaFromContext(ctx).user.findUnique({
@@ -72,7 +77,8 @@ export class UserRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [Room], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(SET_NULL)"
   })
   async rooms(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserRoomsArgs): Promise<Room[]> {
     return getPrismaFromContext(ctx).user.findUnique({
@@ -83,7 +89,8 @@ export class UserRelationsResolver {
   }
 
   @TypeGraphQL.FieldResolver(_type => [Message], {
-    nullable: false
+    nullable: false,
+    description: "@onDelete(CASCADE)"
   })
   async messages(@TypeGraphQL.Root() user: User, @TypeGraphQL.Ctx() ctx: any, @TypeGraphQL.Args() args: UserMessagesArgs): Promise<Message[]> {
     return getPrismaFromContext(ctx).user.findUnique({

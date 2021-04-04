@@ -120,7 +120,7 @@ export class PhotoResolvers {
 
   @Mutation((returns) => DeletePhotoOutput)
   @Authorized()
-  deletePhoto(
+  removePhoto(
     @AuthUser() authUser: User,
     @Arg("input") input: DeletePhotoInput
   ): Promise<DeletePhotoOutput> {

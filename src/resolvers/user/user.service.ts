@@ -20,7 +20,7 @@ import { prismaClient } from "../../prisma";
 import { SECRET_KEY } from "../../utils";
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
-import { uploadFile } from "../../aws/s3";
+import { removeFile, uploadFile } from "../../aws/s3";
 import { User } from "../../generated";
 
 export class UserService {
@@ -128,6 +128,7 @@ export class UserService {
   }: UpdateProfileInput): Promise<UpdateProfileOutput> {
     try {
       const user = await prismaClient.user.findUnique({ where: { id } });
+      const oldAvatar = user?.avatar;
       if (user) {
         const {
           password,
@@ -141,6 +142,9 @@ export class UserService {
           const uploadResult = await uploadFile(await avatarInput);
           if (uploadResult.ok) {
             avatar = uploadResult.url;
+            if (oldAvatar) {
+              await removeFile(oldAvatar);
+            }
             console.log(uploadResult);
           } else {
             console.log(uploadResult.error);

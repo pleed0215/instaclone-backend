@@ -30,7 +30,7 @@ const httpServer = http.createServer(app);
 const main = async () => {
   const { typeDefs, resolvers: appResolvers } = await buildTypeDefsAndResolvers(
     {
-      resolvers: [__dirname + "/**/*.resolvers.{ts,js}"],
+      resolvers: [__dirname + "/src/resolvers/**/*.resolvers.{ts,js}"],
       pubSub: pubsub,
       authChecker: customAuthChecker,
     }
@@ -47,6 +47,7 @@ const main = async () => {
 
   const server = new ApolloServer({
     schema: appSchema,
+
     introspection: true,
     playground: true,
     // authentication part.

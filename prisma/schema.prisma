@@ -25,12 +25,21 @@ model User {
   bio       String?
   avatar    String?
 
+  /// @onDelete(SET_NULL)
   followers User[]    @relation("FollowRelation", references: [id])
+
+  /// @onDelete(SET_NULL)
   following User[]    @relation("FollowRelation", references: [id])
+
+  /// @onDelete(CASCADE)
   photos    Photo[]
+  /// @onDelete(CASCADE)
   likes     Like[]
+  /// @onDelete(CASCADE)
   comments  Comment[]
+  /// @onDelete(SET_NULL)
   rooms     Room[]
+  /// @onDelete(CASCADE)
   messages   Message[]
 
   createdAt DateTime  @default(now())
@@ -43,16 +52,20 @@ model Photo {
   userId    Int
   file      String
   caption   String?
+  /// @onDelete(SET_NULL)
   hashtags  HashTag[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  /// @onDelete(CASCADE)
   likes     Like[]
+  /// @onDelete(CASCADE)
   comments  Comment[]
 }
 
 model HashTag {
   id        Int      @id @default(autoincrement())
   hashtag   String   @unique
+  /// @onDelete(SET_NULL)
   photos    Photo[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -87,7 +100,9 @@ model Room {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  /// @onDelete(SET_NULL)
   participants User[]
+  /// @onDelete(SET_NULL)
   messages     Message[]
 }
 

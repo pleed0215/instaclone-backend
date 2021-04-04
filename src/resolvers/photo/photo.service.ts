@@ -24,6 +24,7 @@ import {
 import { prismaClient } from "../../prisma";
 import { User, HashTag, Photo } from "../../generated";
 import { parseHashTag } from "../../utils";
+import { PrismaDelete } from "@paljs/plugins";
 
 export class PhotoService {
   async uploadPhoto(
@@ -275,13 +276,21 @@ export class PhotoService {
       const photo = await prismaClient.photo.findUnique({
         where: { id },
       });
+      const prismaDelete = new PrismaDelete(prismaClient);
 
       if (photo) {
         if (photo.userId === authUser.id) {
           if (photo.file) {
             await removeFile(photo.file);
           }
-          await prismaClient.photo.delete({ where: { id } });
+          //await prismaClient.photo.delete({ where: { id } });
+          await prismaDelete.onDelete({
+            model: "Photo",
+            where: {
+              id,
+            },
+            deleteParent: true,
+          });
           return {
             ok: true,
           };
